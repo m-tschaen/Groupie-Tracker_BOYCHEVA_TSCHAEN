@@ -50,7 +50,20 @@
     padding: 13px 17px;
     color: #d4c4a8;
     text-decoration: none;
+    font-size: 0.95rem;
+    border-radius: 8px;
     margin-bottom: 5px;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.sidebar-nav a:hover {
+    background: rgba(255,255,255,0.05);
+    color: #e8dcc8;
+    border: 1px solid #8fbc8f;
+    box-shadow: 0 0 5px #8fbc8f, 
+                0 0 10px rgba(143, 188, 143, 0.5), 
+                inset 0 0 5px rgba(143, 188, 143, 0.1);
 }
 
 .sidebar-nav a .icon {
