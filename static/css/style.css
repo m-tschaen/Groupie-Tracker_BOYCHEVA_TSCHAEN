@@ -9,6 +9,7 @@
     display: flex;
     min-height: 100vh;
 }
+
 .menu {
     width: 200px;
     background-color: #2c3e50;
@@ -30,17 +31,27 @@
 .menu a:hover {
     text-decoration: underline;
 }
+
 .content {
     flex: 1;
     padding: 30px;
 }
- /*style sidebar*/
+
+/*style sidebar*/
 .sidebar {
     width: 280px;
     background: #1a2e1a;
     padding: 25px 20px;
+    display: flex;
+    flex-direction: column;
     position: fixed; 
     height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.sidebar-nav {
+    margin-bottom: 30px;
 }
 
 .sidebar-nav a {
@@ -69,6 +80,9 @@
 .sidebar-nav a .icon {
     width: 20px;
     height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .sidebar-nav a .icon svg {
@@ -86,6 +100,7 @@
     letter-spacing: 2px;
     padding: 20px 18px 10px;
 }
+
 /*style artiste*/
 .sidebar-artists {
     flex: 1;
