@@ -34,3 +34,19 @@
     flex: 1;
     padding: 30px;
 }
+ /*style sidebar*/
+.sidebar {
+    width: 280px;
+    background: #1a2e1a;
+    padding: 25px 20px;
+    position: fixed; 
+    height: 100vh;
+}
+
+.sidebar-nav a {
+    display: block;
+    padding: 13px 17px;
+    color: #d4c4a8;
+    text-decoration: none;
+    margin-bottom: 5px;
+}
