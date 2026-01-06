@@ -79,9 +79,7 @@
 .container{
     display: flex;
     min-height: 100vh;
-    visibility: hidden;
-    animation: showSite 0s linear forwards;
-    animation-delay: 2.2s;
+    visibility: visible;
     flex-direction: column;
 }
 
@@ -181,4 +179,30 @@
     height: auto;
     object-fit: contain;
     filter: drop-shadow(0 0 6px rgba(245, 199, 173, 0.6));
+}
+
+.main-content {
+    margin-left: 280px;
+    padding: 40px;
+}
+
+.artists-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 25px;
+}
+
+.artist-card {
+    background: #1f2f1f;
+    border-radius: 14px;
+    padding: 18px;
+    text-align: center;
+    color: #e8dcc8;
+}
+
+.artist-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 10px;
 }
