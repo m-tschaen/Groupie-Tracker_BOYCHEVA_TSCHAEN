@@ -7,51 +7,45 @@
 </head>
 <body>
 <div class="container">
-    <main class="main-content">
-        <a href="/" style="color:#d4c4a8;text-decoration:none;">← Retour</a>
+    <main class="main-content artist-page">
+    </main>
+        <a href="/" class="back-link">← Retour</a>
 
-        <div class="artist-detail">
+        <section class="artist-header">
             <img class="artist-detail-img" src="{{.Artist.Image}}" alt="{{.Artist.Name}}">
-            <h1>{{.Artist.Name}}</h1>
+            <div class="artist-header-info boxed-info">
+                <h1>{{.Artist.Name}}</h1>
+                <p><strong>Création :</strong> {{.Artist.CreationDate}}</p> 
+                <p><strong>Premier album :</strong> {{.Artist.FirstAlbum}}</p>
+            </div>
+        </section>
 
-            <p><strong>Création :</strong> {{.Artist.CreationDate}}</p>
-            <p><strong>Premier album :</strong> {{.Artist.FirstAlbum}}</p>
-
+        <section class="relations-section">
             <h2>Membres</h2>
-            <ul>
-                {{range .Artist.Members}}
-                <li>{{.}}</li>
-                {{end}}
-            </ul>
-
-            <h2>Locations</h2>
-            <ul>
-                {{range .Locations}}
-                <li>{{.}}</li>
-                {{end}}
-            </ul>
-
-            <h2>Dates de concerts</h2>
-            <ul>
-                {{range .Dates}}
-                <li>{{.}}</li>
-                {{end}}
-            </ul>
-
-            <h2>Relations (Lieu → Dates)</h2>
             <div class="relations">
-                {{range $place, $dates := .Relations}}
+                {{range .Artist.Members}}
                 <div class="relation-card">
-                    <h3>{{$place}}</h3>
+                    <h3>{{.}}</h3>
+                </div>
+                {{end}}
+            </div>
+        </section>
+
+        <section class="relations-section">
+            <h2>Concerts</h2>
+            <div class="relations">
+                {{range .RelationItems}}
+                <div class="relation-card">
+                    <h3>{{.Place}}</h3>
                     <ul>
-                        {{range $dates}}
+                        {{range .Dates}}
                         <li>{{.}}</li>
                         {{end}}
                     </ul>
                 </div>
                 {{end}}
             </div>
-        </div>
+        </section>
     </main>
 </div>
 </body>

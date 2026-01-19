@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"sort"
+	"strings"
+	"unicode"
 )
 
 type Artist struct {
@@ -35,11 +38,56 @@ type RelationsResponse struct {
 	DatesLocation map[string][]string `json:"datesLocations"`
 }
 
+type RelationItem struct {
+	Place string
+	Dates []string
+}
+
 type ArtistPageData struct {
-	Artist    Artist
-	Locations []string
-	Dates     []string
-	Relations map[string][]string
+	Artist        Artist
+	Locations     []string
+	Dates         []string
+	RelationItems []RelationItem
+}
+
+func formatDate(s string) string {
+	return strings.TrimPrefix(s, "*")
+}
+
+func titleWords(s string) string {
+	s = strings.ToLower(s)
+	words := strings.Fields(s)
+	for i, w := range words {
+		r := []rune(w)
+		if len(r) == 0 {
+			continue
+		}
+		r[0] = unicode.ToUpper(r[0])
+		words[i] = string(r)
+	}
+	return strings.Join(words, " ")
+}
+
+func formatPlace(raw string) string {
+	raw = strings.ReplaceAll(raw, "_", " ")
+	parts := strings.Split(raw, "-")
+	if len(parts) < 2 {
+		return titleWords(raw)
+	}
+
+	countryRaw := strings.TrimSpace(parts[len(parts)-1])
+	cityRaw := strings.TrimSpace(strings.Join(parts[:len(parts)-1], " "))
+
+	city := titleWords(cityRaw)
+
+	countryClean := strings.ReplaceAll(countryRaw, "_", " ")
+	countryWords := strings.Fields(countryClean)
+
+	if len(countryWords) == 1 && len(countryWords[0]) <= 3 {
+		return city + ", " + strings.ToUpper(countryWords[0])
+	}
+
+	return city + ", " + titleWords(countryClean)
 }
 
 func main() {
@@ -49,7 +97,12 @@ func main() {
 		),
 	)
 
-	tmpl := template.Must(template.ParseFiles("templates/index.html", "templates/artist.html"))
+	tmpl := template.Must(
+		template.New("root").Funcs(template.FuncMap{
+			"formatPlace": formatPlace,
+			"formatDate":  formatDate,
+		}).ParseFiles("templates/index.html", "templates/artist.html"),
+	)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/" {
@@ -107,11 +160,35 @@ func main() {
 			return
 		}
 
+		keys := make([]string, 0, len(relRes.DatesLocation))
+		for k := range relRes.DatesLocation {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+
+		items := make([]RelationItem, 0, len(keys))
+		for _, k := range keys {
+			dates := relRes.DatesLocation[k]
+			for i := range dates {
+				dates[i] = formatDate(dates[i])
+			}
+
+			items = append(items, RelationItem{
+				Place: formatPlace(k),
+				Dates: dates,
+			})
+		}
+
+		formattedLocations := make([]string, 0, len(locRes.Locations))
+		for _, l := range locRes.Locations {
+			formattedLocations = append(formattedLocations, formatPlace(l))
+		}
+
 		data := ArtistPageData{
-			Artist:    *found,
-			Locations: locRes.Locations,
-			Dates:     dateRes.Dates,
-			Relations: relRes.DatesLocation,
+			Artist:        *found,
+			Locations:     formattedLocations,
+			Dates:         dateRes.Dates,
+			RelationItems: items,
 		}
 
 		tmpl.ExecuteTemplate(w, "artist.html", data)
