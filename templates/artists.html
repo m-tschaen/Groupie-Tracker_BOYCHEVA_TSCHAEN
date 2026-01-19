@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{{.Artist.Name}}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<div class="container">
+    <main class="main-content">
+        <a href="/" style="color:#d4c4a8;text-decoration:none;">← Retour</a>
+
+        <div class="artist-detail">
+            <img class="artist-detail-img" src="{{.Artist.Image}}" alt="{{.Artist.Name}}">
+            <h1>{{.Artist.Name}}</h1>
+
+            <p><strong>Création :</strong> {{.Artist.CreationDate}}</p>
+            <p><strong>Premier album :</strong> {{.Artist.FirstAlbum}}</p>
+
+            <h2>Membres</h2>
+            <ul>
+                {{range .Artist.Members}}
+                <li>{{.}}</li>
+                {{end}}
+            </ul>
+
+            <h2>Locations</h2>
+            <ul>
+                {{range .Locations}}
+                <li>{{.}}</li>
+                {{end}}
+            </ul>
+
+            <h2>Dates de concerts</h2>
+            <ul>
+                {{range .Dates}}
+                <li>{{.}}</li>
+                {{end}}
+            </ul>
+
+            <h2>Relations (Lieu → Dates)</h2>
+            <div class="relations">
+                {{range $place, $dates := .Relations}}
+                <div class="relation-card">
+                    <h3>{{$place}}</h3>
+                    <ul>
+                        {{range $dates}}
+                        <li>{{.}}</li>
+                        {{end}}
+                    </ul>
+                </div>
+                {{end}}
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>
