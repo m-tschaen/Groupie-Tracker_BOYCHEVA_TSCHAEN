@@ -78,11 +78,11 @@
             <main class="main-content">
                 <div class="artists-grid">
                     {{range .}}
-                        <div class="artist-card">
+                        <a href="/artist/{{.Id}}" class="artist-card">
                             <img src="{{.Image}}" alt="{{.Name}}">
                             <h3>{{.Name}}</h3>
                             <p>{{len .Members}} membres</p>
-                        </div>
+                        </a>
                     {{end}}
                 </div>
             </main>

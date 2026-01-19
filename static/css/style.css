@@ -160,6 +160,7 @@
     font-size: 0.75rem;
     color: #6b8c6b;
 }
+
 .line {
     height: 1px;
     width: 100%;
@@ -167,6 +168,7 @@
     background: rgba(255, 255, 255, 0.25);
     flex-shrink: 0;
 }
+
 .sidebar-logo {
     display: flex;
     justify-content: center;
@@ -206,3 +208,39 @@
     object-fit: cover;
     border-radius: 10px;
 }
+
+.artist-card {
+    display: block;
+    text-decoration: none;
+    color: #e8dcc8;
+}
+
+.artist-card:hover {
+    transform: translateY(-2px);
+}
+
+.artist-detail {
+    color: #e8dcc8;
+}
+
+.artist-detail-img {
+    width: 360px;
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    margin: 20px 0;
+}
+
+.relations {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+    margin-top: 10px;
+}
+
+.relation-card {
+    background: #1f2f1f;
+    border-radius: 12px;
+    padding: 14px;
+}
+
