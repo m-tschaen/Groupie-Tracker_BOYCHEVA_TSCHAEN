@@ -370,27 +370,25 @@ body{
   font-weight: 700;
 }
 
-/* 1. Махаме старите конфликти */
+
 .search-bar-container {
     width: 100%;
     margin-bottom: 40px;
-    display: block; /* Променяме от flex на block */
+    display: block; 
 }
 
-/* 2. Контейнерът, който държи търсачката и бутона за филтри на един ред */
 .top-controls {
     display: flex;
     align-items: center;
-    gap: 15px; /* Разстояние между търсачката и бутона Filtres */
+    gap: 15px; 
     width: 100%;
     position: relative;
 }
 
-/* Модерна капсула за търсачката */
 .search-form {
     display: flex;
     background: #3d4e35;
-    border-radius: 50px; /* Напълно заоблено */
+    border-radius: 50px; 
     padding: 5px;
     border: 1px solid rgba(143, 188, 143, 0.3);
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
@@ -398,7 +396,7 @@ body{
 }
 
 .search-input {
-    background: transparent !important; /* Махаме вътрешния фон */
+    background: transparent !important; 
     border: none !important;
     padding: 12px 25px !important;
     width: 100% !important;
@@ -409,7 +407,7 @@ body{
 .search-btn {
     background: #8fbc8f !important;
     color: #1a2e1a !important;
-    border-radius: 50px !important; /* Кръгъл бутон вътре в лентата */
+    border-radius: 50px !important; 
     padding: 10px 25px !important;
     border: none !important;
     transition: all 0.3s ease !important;
@@ -423,14 +421,13 @@ body{
     transform: scale(1.05);
 }
 
-/* 4. Филтрите като падащо меню (Dropdown) */
 .filters-dd {
     position: relative;
 }
 
 .filters-trigger {
     background: rgba(61, 78, 53, 0.8);
-    backdrop-filter: blur(5px); /* Модерен стъклен ефект */
+    backdrop-filter: blur(5px);
     border: 1px solid rgba(143, 188, 143, 0.4);
     border-radius: 50px;
     padding: 12px 30px;
@@ -439,7 +436,7 @@ body{
     transition: 0.3s;
 }
 
-/* Панелът с чекбоксовете */
+
 .filters-panel {
     background: #2a3a25 !important;
     border: 1px solid #8fbc8f !important;
@@ -449,8 +446,6 @@ body{
     margin-top: 15px;
 }
 
-
-/* Чекбоксовете - да станат по-големи и удобни */
 .members-grid {
     grid-template-columns: repeat(4, 1fr) !important;
     gap: 15px !important;
@@ -460,13 +455,12 @@ body{
 }
 
 .check input[type="checkbox"] {
-    accent-color: #8fbc8f; /* Сменя цвета на самото тикче */
+    accent-color: #8fbc8f; 
     width: 18px;
     height: 18px;
     cursor: pointer;
 }
 
-/* 5. Подредба вътре във филтрите */
 .filters-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
