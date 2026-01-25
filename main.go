@@ -8,6 +8,7 @@ import (
 	"sort"
 	"strings"
 	"unicode"
+	"strconv"
 )
 
 type Artist struct {
@@ -90,6 +91,37 @@ func formatPlace(raw string) string {
 	return city + ", " + titleWords(countryClean)
 }
 
+type IndexPageData struct {
+	Artists         []Artist
+	Query           string
+	MinYear         string
+	MaxYear         string
+	MemberOptions   []int
+	SelectedMembers map[int]bool
+}
+
+func parseInt(s string) (int, bool) {
+	s = strings.TrimSpace(s)
+	if s == "" {
+		return 0, false
+	}
+	n, err := strconv.Atoi(s)
+	if err != nil {
+		return 0, false
+	}
+	return n, true
+}
+
+func selectedMembersSet(vals []string) map[int]bool {
+	set := make(map[int]bool)
+	for _, v := range vals {
+		if n, ok := parseInt(v); ok {
+			set[n] = true
+		}
+	}
+	return set
+}
+
 func main() {
 	http.Handle("/static/",
 		http.StripPrefix("/static/",
@@ -116,26 +148,68 @@ func main() {
 			return
 		}
 
-		query := strings.ToLower(r.URL.Query().Get("query"))
-		if query != "" {
-			var filtered []Artist
-			for _, artist := range artists {
+		queryRaw := strings.TrimSpace(r.URL.Query().Get("query"))
+	    query := strings.ToLower(queryRaw)
+
+	    minYearStr := r.URL.Query().Get("minYear")
+	    maxYearStr := r.URL.Query().Get("maxYear")
+
+	    minYear, hasMin := parseInt(minYearStr)
+	    maxYear, hasMax := parseInt(maxYearStr)
+
+		membersVals := r.URL.Query()["members"]
+	    selected := selectedMembersSet(membersVals)
+        
+		filtered := make([]Artist, 0, len(artists))
+		for _, artist := range artists {
+			if query != "" {
 				match := strings.Contains(strings.ToLower(artist.Name), query)
-				for _, member := range artist.Members {
-					if strings.Contains(strings.ToLower(member), query) {
+				
+				if !match {
+					for _, member := range artist.Members {
+						if strings.Contains(strings.ToLower(member), query) {
+							match = true
+							break
+						}
+					}
+				}
+
+				if !match {
+					if strings.Contains(strconv.Itoa(artist.CreationDate), query) || strings.Contains(strings.ToLower(artist.FirstAlbum), query) {
 						match = true
 					}
 				}
-                if strings.Contains(fmt.Sprint(artist.CreationDate), query) || strings.Contains(strings.ToLower(artist.FirstAlbum), query) {
-					match = true
-				}
-				if match {
-					filtered = append(filtered, artist)
+				if !match {
+					continue
 				}
 			}
-			artists = filtered
+			if hasMin && artist.CreationDate < minYear {
+				continue
+			}
+			if hasMax && artist.CreationDate > maxYear {
+				continue
+			}
+			if len(selected) > 0 {
+				if !selected[len(artist.Members)] {
+					continue
+				}
+			}
+			filtered = append(filtered, artist)
 		}
-		tmpl.ExecuteTemplate(w, "index.html", artists)
+		opts := []int{1, 2, 3, 4, 5, 6, 7, 8}
+		data := IndexPageData{
+			Artists:         filtered,
+			Query:           queryRaw,
+			MinYear:         minYearStr,
+			MaxYear:         maxYearStr,
+			MemberOptions:   opts,
+			SelectedMembers: selected,
+		}
+		
+		if err := tmpl.ExecuteTemplate(w, "index.html", data); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	})
 
 	http.HandleFunc("/artist/", func(w http.ResponseWriter, r *http.Request) {

@@ -62,24 +62,53 @@
 
         <main class="main-content">
             <div class="search-bar-container">
+    <div class="top-controls">
+        <form action="/" method="GET" class="search-form">
+            <input type="text" name="query" list="suggestions" placeholder="Rechercher un artist..." class="search-input">
+            <datalist id="suggestions">
+                {{range .Artists}}
+                    <option value="{{.Name}}">Artist</option>
+                {{end}}
+            </datalist>
+            <button type="submit" class="search-btn">Search</button>
+        </form>
+
+        <details class="filters-dd">
+            <summary class="filters-trigger">Filtres</summary>
+            <div class="filters-panel">
                 <form action="/" method="GET">
-                    <input type="text" name="query" list="suggestions" placeholder="Rechercher un artiste..." class="search-input">
-                    <datalist id="suggestions">
-                        {{range .}}
-                            <option value="{{.Name}}">Artist</option>
-                            {{range .Members}}
-                                <option value="{{.}}">Member</option>
+                    <input type="hidden" name="query" value="{{.Query}}">
+                    
+                    <div class="filter-label">Années de création</div>
+                    <div class="filters-row">
+                        <input type="number" name="minYear" class="filter-input" placeholder="Min" value="{{.MinYear}}">
+                        <input type="number" name="maxYear" class="filter-input" placeholder="Max" value="{{.MaxYear}}">
+                    </div>
+
+                    <div class="filter-group">
+                        <div class="filter-label">Nombre de membres</div>
+                        <div class="members-grid">
+                            {{range $i := .MemberOptions}}
+                                <label class="check">
+                                    <input type="checkbox" name="members" value="{{$i}}" {{if (index $.SelectedMembers $i)}}checked{{end}}>
+                                    <span>{{$i}}</span>
+                                </label>
                             {{end}}
-                            <option value="{{.CreationDate}}">Creation Date</option>
-                            <option value="{{.FirstAlbum}}">First Album</option>
-                        {{end}}
-                    </datalist>
-                    <button type="submit">Search</button>
+                        </div>
+                    </div>
+
+                    <div class="filters-actions">
+                        <button type="submit" class="apply-btn">Apply</button>
+                        <a href="/" class="reset-btn">Reset</a>
+                    </div>
                 </form>
             </div>
+        </details>
+    </div>
+</div>
 
             <div class="artists-grid">
-                {{range .}}
+                {{range .Artists}}
                     <a class="artist-card" href="/artist/{{.Id}}">
                         <img src="{{.Image}}" alt="{{.Name}}">
                         <h3>{{.Name}}</h3>

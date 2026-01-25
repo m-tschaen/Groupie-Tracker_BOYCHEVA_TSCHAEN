@@ -298,41 +298,6 @@ body{
     max-width: 1200px;
     margin-right: auto;
 }
-
-.search-bar-container {
-    position: relative;
-    z-index: 10; 
-    margin-bottom: 50px;
-    width: 100%;
-    display: flex !important;
-    justify-content: center;
-    z-index: 9999;
-}
-
-.search-bar-container input {
-    padding: 12px 20px;
-    width: 300px;
-    border-radius: 25px 0 0 25px;
-    border: 1px solid #8fbc8f;
-    background: #3d4e35;
-    color: #e8dcc8;
-    outline: none;
-}
-
-.search-bar-container button {
-    padding: 12px 20px;
-    border-radius: 0 25px 25px 0;
-    border: 1px solid #8fbc8f;
-    background: #8fbc8f;
-    color: #3d4e35;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.search-bar-container button:hover {
-    background: #a8d8a8;
-}
-
 .main-content.artist-page {
     margin-left: 0 !important;
     width: 100% !important;
@@ -403,4 +368,154 @@ body{
 .artist-sidebar .artist-info strong{
   color: #b7c7a6;
   font-weight: 700;
+}
+
+/* 1. Махаме старите конфликти */
+.search-bar-container {
+    width: 100%;
+    margin-bottom: 40px;
+    display: block; /* Променяме от flex на block */
+}
+
+/* 2. Контейнерът, който държи търсачката и бутона за филтри на един ред */
+.top-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Разстояние между търсачката и бутона Filtres */
+    width: 100%;
+    position: relative;
+}
+
+/* Модерна капсула за търсачката */
+.search-form {
+    display: flex;
+    background: #3d4e35;
+    border-radius: 50px; /* Напълно заоблено */
+    padding: 5px;
+    border: 1px solid rgba(143, 188, 143, 0.3);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    overflow: hidden;
+}
+
+.search-input {
+    background: transparent !important; /* Махаме вътрешния фон */
+    border: none !important;
+    padding: 12px 25px !important;
+    width: 100% !important;
+    color: #e8dcc8 !important;
+    font-size: 1rem;
+}
+
+.search-btn {
+    background: #8fbc8f !important;
+    color: #1a2e1a !important;
+    border-radius: 50px !important; /* Кръгъл бутон вътре в лентата */
+    padding: 10px 25px !important;
+    border: none !important;
+    transition: all 0.3s ease !important;
+    font-weight: 800 !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.search-btn:hover {
+    background: #e8dcc8 !important;
+    transform: scale(1.05);
+}
+
+/* 4. Филтрите като падащо меню (Dropdown) */
+.filters-dd {
+    position: relative;
+}
+
+.filters-trigger {
+    background: rgba(61, 78, 53, 0.8);
+    backdrop-filter: blur(5px); /* Модерен стъклен ефект */
+    border: 1px solid rgba(143, 188, 143, 0.4);
+    border-radius: 50px;
+    padding: 12px 30px;
+    color: #e8dcc8;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+/* Панелът с чекбоксовете */
+.filters-panel {
+    background: #2a3a25 !important;
+    border: 1px solid #8fbc8f !important;
+    border-radius: 20px !important;
+    padding: 25px !important;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6) !important;
+    margin-top: 15px;
+}
+
+
+/* Чекбоксовете - да станат по-големи и удобни */
+.members-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 15px !important;
+    background: rgba(0,0,0,0.1);
+    padding: 15px;
+    border-radius: 12px;
+}
+
+.check input[type="checkbox"] {
+    accent-color: #8fbc8f; /* Сменя цвета на самото тикче */
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+/* 5. Подредба вътре във филтрите */
+.filters-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.filter-input {
+    width: 100%;
+    background: #1f2f1f;
+    border: 1px solid rgba(143, 188, 143, 0.3);
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.filter-label {
+    color: #8fbc8f;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.filters-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.apply-btn {
+    background: #8fbc8f !important;
+    border-radius: 50px !important;
+    color: #1a2e1a !important;
+    padding: 12px !important;
+    font-size: 1rem !important;
+    box-shadow: 0 4px 10px rgba(143, 188, 143, 0.3);
+}
+
+.reset-btn {
+    background: transparent !important;
+    border: 1px solid rgba(232, 220, 200, 0.4) !important;
+    border-radius: 50px !important;
+    color: #e8dcc8 !important;
+    transition: 0.3s !important;
+}
+
+.reset-btn:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: #e8dcc8 !important;
 }
