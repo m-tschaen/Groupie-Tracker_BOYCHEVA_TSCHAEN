@@ -23,22 +23,6 @@
                     </span>
                     <span>Accueil</span>
                 </a>
-                <a href="/">
-                    <span class="icon">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                        </svg>
-                    </span>
-                    <span>Artistes</span>
-                </a>
-                <a href="/concerts">
-                    <span class="icon">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
-                        </svg>
-                    </span>
-                    <span>Concerts</span>
-                </a>
                 <a href="/locations">
                     <span class="icon">
                         <svg viewBox="0 0 24 24">
@@ -74,18 +58,36 @@
                     </div>
                 </a>
             </div>
-            </aside>
-            <main class="main-content">
-                <div class="artists-grid">
-                    {{range .}}
-                        <a class="artist-card" href="/artist/{{.Id}}">
-                            <img src="{{.Image}}" alt="{{.Name}}">
-                            <h3>{{.Name}}</h3>
-                            <p>{{len .Members}} membres</p>
-                        </a>
-                    {{end}}
-                </div>
-            </main>
-        </div>
-    </body>
+            </aside> 
+
+        <main class="main-content">
+            <div class="search-bar-container">
+                <form action="/" method="GET">
+                    <input type="text" name="query" list="suggestions" placeholder="Rechercher un artiste..." class="search-input">
+                    <datalist id="suggestions">
+                        {{range .}}
+                            <option value="{{.Name}}">Artist</option>
+                            {{range .Members}}
+                                <option value="{{.}}">Member</option>
+                            {{end}}
+                            <option value="{{.CreationDate}}">Creation Date</option>
+                            <option value="{{.FirstAlbum}}">First Album</option>
+                        {{end}}
+                    </datalist>
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+
+            <div class="artists-grid">
+                {{range .}}
+                    <a class="artist-card" href="/artist/{{.Id}}">
+                        <img src="{{.Image}}" alt="{{.Name}}">
+                        <h3>{{.Name}}</h3>
+                        <p>{{len .Members}} membres</p>
+                    </a>
+                {{end}}
+            </div>
+        </main>
+    </div> 
+  </body>
 </html>

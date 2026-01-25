@@ -115,6 +115,26 @@ func main() {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+
+		query := strings.ToLower(r.URL.Query().Get("query"))
+		if query != "" {
+			var filtered []Artist
+			for _, artist := range artists {
+				match := strings.Contains(strings.ToLower(artist.Name), query)
+				for _, member := range artist.Members {
+					if strings.Contains(strings.ToLower(member), query) {
+						match = true
+					}
+				}
+                if strings.Contains(fmt.Sprint(artist.CreationDate), query) || strings.Contains(strings.ToLower(artist.FirstAlbum), query) {
+					match = true
+				}
+				if match {
+					filtered = append(filtered, artist)
+				}
+			}
+			artists = filtered
+		}
 		tmpl.ExecuteTemplate(w, "index.html", artists)
 	})
 

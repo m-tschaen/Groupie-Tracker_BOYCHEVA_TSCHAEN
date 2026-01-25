@@ -8,18 +8,18 @@
 <body>
 <div class="container">
     <main class="main-content artist-page">
-    </main>
+        <aside class="artist-sidebar">
         <a href="/" class="back-link">← Retour</a>
 
         <section class="artist-header">
             <img class="artist-detail-img" src="{{.Artist.Image}}" alt="{{.Artist.Name}}">
-            <div class="artist-header-info boxed-info">
+            <div class="artist-info">
                 <h1>{{.Artist.Name}}</h1>
                 <p><strong>Création :</strong> {{.Artist.CreationDate}}</p> 
                 <p><strong>Premier album :</strong> {{.Artist.FirstAlbum}}</p>
             </div>
         </section>
-
+        </aside>
         <section class="relations-section">
             <h2>Membres</h2>
             <div class="relations">
