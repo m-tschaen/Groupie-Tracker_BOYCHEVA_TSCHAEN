@@ -5,9 +5,13 @@
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
+body{
+    background-color: #BEC5A4 ;
+}
+
 .sidebar {
     width: 280px;
-    background: #1a2e1a;
+    background: #3d4e35;
     padding: 24px 18px;
     display: flex;
     flex-direction: column;
@@ -16,7 +20,7 @@
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: thin;
-    scrollbar-color: #5c7a5c transparent;
+    scrollbar-color: #3d4e35 transparent;
 }
 
 .sidebar-nav {
@@ -28,7 +32,7 @@
     align-items: center;
     gap: 15px;
     padding: 13px 17px;
-    color: #d4c4a8;
+    color: #BEC5A4;
     text-decoration: none;
     font-size: 0.95rem;
     border-radius: 8px;
@@ -88,17 +92,17 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgb(240, 225, 215);
+    background: #BEC5A4;
     z-index: 9999;
     opacity: 1;
     animation: splashOut 0.6s ease forwards;
-    animation-delay: 2.8s;
+    animation-delay: 2s;
 }
 
 .splash-logo {
     width: 420px;
     opacity: 0;
-    animation: logoFadeIn 3s ease-out forwards;
+    animation: logoFadeIn 1.5s ease-out forwards;
 }
 
 @keyframes logoFadeIn {
@@ -196,7 +200,7 @@
 }
 
 .artist-card {
-    background: #1f2f1f;
+    background: #3d4e35;
     border-radius: 14px;
     padding: 18px;
     text-align: center;
