@@ -1,541 +1,99 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Carte des Concerts</title>
-    <link rel="stylesheet" href="/static/css/style.css">
-    <link rel="stylesheet" href="/static/css/locations.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-</head>
-<body>
-    <div class="app-layout">
-        <aside class="sidebar">
-            <div class="sidebar-logo">
-                <img src="/static/img/light_logo.png" alt="Logo">
-            </div>
-            <nav class="sidebar-nav">
-                <a href="/">Accueil</a>
-                <a href="/locations" class="active">Carte</a>
-            </nav>
-            <div class="line"></div>
-            <div class="sidebar-section-title">Continents Top</div>
-            <div class="sidebar-artists">
-                {{range .Continents}}
-                <div class="sidebar-artist">
-                    <div class="sidebar-artist-info">
-                        <h4>{{.Name}}</h4>
-                        <p>{{.TotalConcerts}} concerts</p>
-                    </div>
+    <head>
+        <meta charset="UTF-8">
+        <title>Carte des Concerts</title>
+        <link rel="stylesheet" href="/static/css/style.css">
+        <link rel="stylesheet" href="/static/css/locations.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <div class="app-layout">
+            <aside class="sidebar">
+                <div class="sidebar-logo">
+                    <img src="/static/img/light_logo.png" alt="Logo">
                 </div>
-                {{end}}
-            </div>
-        </aside>
-        
-        <main class="main-content-map">
-            <div class="locations-header">
-                <h1>Carte des Concerts</h1>
-                <p>Découvrez tous les lieux de concerts à travers le monde</p>
-            </div>
-            
-            <div class="map-view-box">
-                <!-- Boutons de contrôle du zoom -->
-                <div class="zoom-controls">
-                    <button onclick="zoomIn()" class="zoom-btn" title="Zoom avant">+</button>
-                    <button onclick="resetZoom()" class="zoom-btn" title="Réinitialiser">⊙</button>
-                    <button onclick="zoomOut()" class="zoom-btn" title="Zoom arrière">−</button>
-                </div>
-                
-                <div id="map-container" style="position: relative; overflow: auto; max-height: 600px; cursor: grab;">
-                    <img id="map-image" src="https://upload.wikimedia.org/wikipedia/commons/8/83/Equirectangular_projection_SW.jpg" 
-                         alt="Carte du monde" 
-                         style="width: 100%; height: auto; display: block; border-radius: 15px; opacity: 0.4; transition: transform 0.3s ease; transform-origin: top left; pointer-events: none;">
-                    
-                    <svg id="map-svg" viewBox="0 0 1200 600" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; transition: transform 0.3s ease; transform-origin: top left;">
-                        {{range $contIndex, $continent := .Continents}}
-                            {{range $locIndex, $location := $continent.Locations}}
-                            <g class="location-marker" onclick="scrollToLocation('loc-{{$locIndex}}-{{$location.City}}')">
-                                <circle cx="{{$location.X}}" cy="{{$location.Y}}" r="10" fill="#d4af37" opacity="0.5" class="marker-pulse"/>
-                                <circle cx="{{$location.X}}" cy="{{$location.Y}}" r="6" fill="#ffd700" stroke="#fff" stroke-width="2" class="marker-dot"/>
-                                <text x="{{$location.X}}" y="{{$location.Y}}" dy="-18" class="marker-label" 
-                                      fill="#ffd700" font-size="14" text-anchor="middle" font-weight="700">
-                                    {{$location.City}}
-                                </text>
-                                <text x="{{$location.X}}" y="{{$location.Y}}" dy="-35" class="marker-count" 
-                                      fill="#fff" font-size="12" text-anchor="middle" font-weight="600">
-                                    {{$location.Count}} concert{{if gt $location.Count 1}}s{{end}}
-                                </text>
-                            </g>
-                            {{end}}
-                        {{end}}
-                    </svg>
-                </div>
-            </div>
-            
-            <!-- Liste organisée par continent -->
-            <div class="locations-organized">
-                <h2>Tous les Lieux de Concerts</h2>
-                
-                {{range .Continents}}
-                <div class="continent-section">
-                    <h3 class="continent-title" onclick="toggleContinent('{{.Name}}')">
-                        {{.Name}}
-                        <span class="concert-count-badge">{{.TotalConcerts}} concerts</span>
-                        <span class="toggle-icon">▼</span>
-                    </h3>
-                    <div id="{{.Name}}" class="continent-content" style="display: none;">
-                        {{range $index, $location := .Locations}}
-                        <div class="location-item" onclick="toggleDetails('loc-{{$index}}-{{$location.City}}')">
-                            <div class="location-header">
-                                <span class="location-name">{{$location.City}}, {{$location.Country}}</span>
-                                <span class="location-count">{{$location.Count}} concert{{if gt $location.Count 1}}s{{end}}</span>
-                            </div>
-                            <div id="loc-{{$index}}-{{$location.City}}" class="location-details">
-                                <p><strong>Artistes :</strong></p>
-                                <ul>
-                                    {{range $artistIndex, $artistName := $location.Artists}}
-                                    <li><a href="/artist/{{index $location.ArtistIDs $artistIndex}}" class="artist-link">{{$artistName}}</a></li>
-                                    {{end}}
-                                </ul>
+                <nav class="sidebar-nav">
+                    <a href="/">Accueil</a>
+                    <a href="/locations" class="active">Carte</a>
+                </nav>
+                <div class="line"></div>
+                <div class="sidebar-section-title">Continents Top</div>
+                <div class="sidebar-artists">
+                    {{range .Continents}}
+                        <div class="sidebar-artist">
+                            <div class="sidebar-artist-info">
+                                <h4>{{.Name}}</h4>
+                                <p>{{.TotalConcerts}} concerts</p>
                             </div>
                         </div>
-                        {{end}}
+                    {{end}}
+                </div>
+            </aside>
+            <main class="main-content-map">
+                <div class="locations-header">
+                    <h1>Carte des Concerts</h1>
+                    <p>Découvrez tous les lieux de concerts à travers le monde</p>
+                </div>
+                <div class="map-view-box">
+                    <div class="zoom-controls">
+                        <button onclick="zoomIn()" class="zoom-btn" title="Zoom avant">+</button>
+                        <button onclick="resetZoom()" class="zoom-btn" title="Réinitialiser">⊙</button>
+                        <button onclick="zoomOut()" class="zoom-btn" title="Zoom arrière">−</button>
+                    </div>  
+                    <div id="map-container" style="position: relative; overflow: auto; max-height: 600px; cursor: grab;">
+                        <img id="map-image" src="https://upload.wikimedia.org/wikipedia/commons/8/83/Equirectangular_projection_SW.jpg" alt="Carte du monde" style="width: 100%; height: auto; display: block; border-radius: 15px; opacity: 0.4; transition: transform 0.3s ease; transform-origin: top left; pointer-events: none;">
+                        <svg id="map-svg" viewBox="0 0 1200 600" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; transition: transform 0.3s ease; transform-origin: top left;">
+                            {{range $contIndex, $continent := .Continents}}
+                                {{range $locIndex, $location := $continent.Locations}}
+                                    <g class="location-marker" onclick="scrollToLocation('loc-{{$locIndex}}-{{$location.City}}')">
+                                        <circle cx="{{$location.X}}" cy="{{$location.Y}}" r="10" fill="#d4af37" opacity="0.5" class="marker-pulse"/>
+                                        <circle cx="{{$location.X}}" cy="{{$location.Y}}" r="6" fill="#ffd700" stroke="#fff" stroke-width="2" class="marker-dot"/>
+                                        <text x="{{$location.X}}" y="{{$location.Y}}" dy="-18" class="marker-label" fill="#ffd700" font-size="14" text-anchor="middle" font-weight="700">
+                                            {{$location.City}}
+                                        </text>
+                                        <text x="{{$location.X}}" y="{{$location.Y}}" dy="-35" class="marker-count" fill="#fff" font-size="12" text-anchor="middle" font-weight="600">
+                                            {{$location.Count}} concert{{if gt $location.Count 1}}s{{end}}
+                                        </text>
+                                    </g>
+                                {{end}}
+                            {{end}}
+                        </svg>
                     </div>
                 </div>
-                {{end}}
-            </div>
-        </main>
-    </div>
-
-    <script>
-        function toggleContinent(continentId) {
-            const content = document.getElementById(continentId);
-            const icon = event.currentTarget.querySelector('.toggle-icon');
-            
-            if (content.style.display === 'none' || content.style.display === '') {
-                content.style.display = 'block';
-                icon.textContent = '▲';
-            } else {
-                content.style.display = 'none';
-                icon.textContent = '▼';
-            }
-        }
-        
-        function toggleDetails(locationId) {
-            const details = document.getElementById(locationId);
-            
-            if (details.style.display === 'none' || details.style.display === '') {
-                details.style.display = 'block';
-            } else {
-                details.style.display = 'none';
-            }
-        }
-        
-        // Fonction pour scroller vers une ville quand on clique sur un marqueur
-        function scrollToLocation(locationId) {
-            event.stopPropagation();
-            
-            // Trouver l'élément dans la liste
-            const locationElement = document.getElementById(locationId);
-            if (locationElement) {
-                // Ouvrir le continent parent
-                const continentContent = locationElement.closest('.continent-content');
-                if (continentContent && continentContent.style.display === 'none') {
-                    const continentTitle = continentContent.previousElementSibling;
-                    if (continentTitle) {
-                        continentTitle.click();
-                    }
-                }
-                
-                // Ouvrir les détails de la ville
-                if (locationElement.style.display === 'none' || locationElement.style.display === '') {
-                    locationElement.parentElement.click();
-                }
-                
-                // Scroll vers l'élément
-                locationElement.parentElement.scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'center' 
-                });
-                
-                // Effet de highlight
-                locationElement.parentElement.style.background = 'rgba(143, 188, 143, 0.3)';
-                setTimeout(() => {
-                    locationElement.parentElement.style.background = '';
-                }, 2000);
-            }
-        }
-        
-        // Système de zoom sur la carte
-        let zoomLevel = 1;
-        const mapContainer = document.getElementById('map-container');
-        const mapImage = document.getElementById('map-image');
-        const mapSvg = document.getElementById('map-svg');
-        
-        function zoomIn() {
-            zoomLevel = Math.min(zoomLevel + 0.5, 4);
-            updateZoom();
-        }
-        
-        function zoomOut() {
-            zoomLevel = Math.max(zoomLevel - 0.5, 1);
-            updateZoom();
-        }
-        
-        function resetZoom() {
-            zoomLevel = 1;
-            updateZoom();
-            mapContainer.scrollTop = 0;
-            mapContainer.scrollLeft = 0;
-        }
-        
-        function updateZoom() {
-            mapImage.style.transform = `scale(${zoomLevel})`;
-            mapSvg.style.transform = `scale(${zoomLevel})`;
-            
-            // Ajuster la taille du conteneur pour permettre le scroll
-            const newWidth = 100 * zoomLevel;
-            const newHeight = (600 / 1200 * 100) * zoomLevel; // Maintenir le ratio de la carte
-            
-            mapImage.style.width = newWidth + '%';
-            mapSvg.style.width = newWidth + '%';
-        }
-        
-        // Permettre le drag pour déplacer la carte quand zoomée
-        let isDragging = false;
-        let startX, startY, scrollLeft, scrollTop;
-        
-        mapContainer.addEventListener('mousedown', (e) => {
-            if (zoomLevel > 1) {
-                isDragging = true;
-                mapContainer.style.cursor = 'grabbing';
-                startX = e.pageX - mapContainer.offsetLeft;
-                startY = e.pageY - mapContainer.offsetTop;
-                scrollLeft = mapContainer.scrollLeft;
-                scrollTop = mapContainer.scrollTop;
-            }
-        });
-        
-        mapContainer.addEventListener('mouseleave', () => {
-            isDragging = false;
-            if (zoomLevel > 1) {
-                mapContainer.style.cursor = 'grab';
-            }
-        });
-        
-        mapContainer.addEventListener('mouseup', () => {
-            isDragging = false;
-            if (zoomLevel > 1) {
-                mapContainer.style.cursor = 'grab';
-            }
-        });
-        
-        mapContainer.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-            e.preventDefault();
-            const x = e.pageX - mapContainer.offsetLeft;
-            const y = e.pageY - mapContainer.offsetTop;
-            const walkX = (x - startX) * 2;
-            const walkY = (y - startY) * 2;
-            mapContainer.scrollLeft = scrollLeft - walkX;
-            mapContainer.scrollTop = scrollTop - walkY;
-        });
-        
-        // Mettre à jour le curseur selon le zoom
-        function updateCursor() {
-            if (zoomLevel > 1) {
-                mapContainer.style.cursor = 'grab';
-            } else {
-                mapContainer.style.cursor = 'default';
-            }
-        }
-        
-        // Appeler updateCursor après chaque zoom
-        const originalUpdateZoom = updateZoom;
-        updateZoom = function() {
-            originalUpdateZoom();
-            updateCursor();
-        };
-    </script>
-
-    <style>
-        * {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
-        
-        .map-view-box {
-            background: #1a2618;
-            border-radius: 20px;
-            padding: 20px;
-            border: 3px solid #4a6b4a;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
-            position: relative;
-        }
-        
-        .zoom-controls {
-            position: absolute;
-            top: 30px;
-            right: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            z-index: 10;
-        }
-        
-        .zoom-btn {
-            width: 40px;
-            height: 40px;
-            background: rgba(61, 78, 53, 0.9);
-            border: 2px solid #8fbc8f;
-            border-radius: 8px;
-            color: #e8dcc8;
-            font-size: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(5px);
-        }
-        
-        .zoom-btn:hover {
-            background: rgba(143, 188, 143, 0.9);
-            color: #1a2e1a;
-            transform: scale(1.1);
-            box-shadow: 0 4px 12px rgba(143, 188, 143, 0.4);
-        }
-        
-        .zoom-btn:active {
-            transform: scale(0.95);
-        }
-        
-        #map-container {
-            cursor: default;
-            user-select: none;
-        }
-        
-        #map-container:active {
-            cursor: grabbing !important;
-        }
-        
-        #map-container::-webkit-scrollbar {
-            width: 10px;
-            height: 10px;
-        }
-        
-        #map-container::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-        }
-        
-        #map-container::-webkit-scrollbar-thumb {
-            background: #8fbc8f;
-            border-radius: 10px;
-        }
-        
-        #map-container::-webkit-scrollbar-thumb:hover {
-            background: #a8d8a8;
-        }
-        
-        .location-marker {
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .marker-label,
-        .marker-count {
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-            text-shadow: 0 0 10px rgba(0, 0, 0, 1), 0 2px 6px rgba(0, 0, 0, 1);
-        }
-
-        .location-marker:hover .marker-label,
-        .location-marker:hover .marker-count {
-            opacity: 1;
-        }
-
-        .location-marker:hover .marker-dot {
-            r: 9;
-            fill: #fff;
-            filter: drop-shadow(0 0 10px #ffd700);
-        }
-
-        .location-marker:hover .marker-pulse {
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.5; r: 10; }
-            50% { opacity: 0.1; r: 20; }
-        }
-        
-        /* Sections de continents */
-        .locations-organized {
-            margin-top: 50px;
-            background: #3d4e35;
-            border-radius: 20px;
-            padding: 30px;
-        }
-        
-        .locations-organized h2 {
-            color: #e8dcc8;
-            font-size: 1.8rem;
-            font-weight: 600;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        
-        .continent-section {
-            margin-bottom: 20px;
-            background: #2a3a25;
-            border-radius: 15px;
-            overflow: hidden;
-            border: 2px solid rgba(143, 188, 143, 0.3);
-        }
-        
-        .continent-title {
-            background: linear-gradient(135deg, #485641 0%, #3d4e35 100%);
-            color: #e8dcc8;
-            padding: 20px 25px;
-            margin: 0;
-            cursor: pointer;
-            display: grid;
-            grid-template-columns: 1fr auto auto;
-            align-items: center;
-            gap: 15px;
-            font-size: 1.3rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            user-select: none;
-        }
-        
-        .continent-title:hover {
-            background: linear-gradient(135deg, #536550 0%, #485641 100%);
-            box-shadow: 0 4px 15px rgba(143, 188, 143, 0.2);
-        }
-        
-        .concert-count-badge {
-            background: #8fbc8f;
-            color: #1a2e1a;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            white-space: nowrap;
-            min-width: 110px;
-            text-align: center;
-        }
-        
-        .toggle-icon {
-            font-size: 1rem;
-            transition: transform 0.3s ease;
-        }
-        
-        .continent-content {
-            padding: 20px;
-            background: #1f2f1f;
-        }
-        
-        .location-item {
-            background: #2a3a25;
-            border-radius: 10px;
-            margin-bottom: 12px;
-            overflow: hidden;
-            border: 1px solid rgba(143, 188, 143, 0.2);
-            transition: all 0.3s ease;
-        }
-        
-        .location-item:hover {
-            border-color: #8fbc8f;
-            box-shadow: 0 4px 12px rgba(143, 188, 143, 0.15);
-        }
-        
-        .location-header {
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            user-select: none;
-        }
-        
-        .location-name {
-            color: #e8dcc8;
-            font-size: 1rem;
-            font-weight: 500;
-        }
-        
-        .location-count {
-            background: rgba(143, 188, 143, 0.2);
-            color: #8fbc8f;
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-        
-        .location-details {
-            display: none;
-            padding: 0 20px 20px 20px;
-            color: #cfd8c2;
-        }
-        
-        .location-details p {
-            margin-bottom: 10px;
-            color: #8fbc8f;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-        
-        .location-details ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        
-        .location-details li {
-            padding: 8px 15px;
-            margin-bottom: 5px;
-            background: rgba(143, 188, 143, 0.1);
-            border-radius: 8px;
-            color: #e8dcc8;
-            transition: all 0.2s ease;
-            font-size: 0.95rem;
-        }
-        
-        .location-details li:hover {
-            background: rgba(143, 188, 143, 0.2);
-            transform: translateX(5px);
-        }
-        
-        .artist-link {
-            color: #e8dcc8;
-            text-decoration: none;
-            display: block;
-            width: 100%;
-            transition: color 0.2s ease;
-        }
-        
-        .artist-link:hover {
-            color: #8fbc8f;
-            text-decoration: underline;
-        }
-        
-        .location-details li {
-            cursor: pointer;
-        }
-        
-        .locations-header h1 {
-            font-weight: 600;
-            font-size: 2rem;
-        }
-        
-        .locations-header p {
-            font-weight: 400;
-        }
-    </style>
-</body>
+                <div class="locations-organized">
+                    <h2>Tous les Lieux de Concerts</h2>
+                    {{range .Continents}}
+                        <div class="continent-section">
+                            <h3 class="continent-title" onclick="toggleContinent('{{.Name}}')">
+                                {{.Name}}
+                                    <span class="concert-count-badge">{{.TotalConcerts}} concerts</span>
+                                    <span class="toggle-icon">▼</span>
+                            </h3>
+                            <div id="{{.Name}}" class="continent-content" style="display: none;">
+                                {{range $index, $location := .Locations}}
+                                    <div class="location-item" onclick="toggleDetails('loc-{{$index}}-{{$location.City}}')">
+                                        <div class="location-header">
+                                            <span class="location-name">{{$location.City}}, {{$location.Country}}</span>
+                                            <span class="location-count">{{$location.Count}} concert{{if gt $location.Count 1}}s{{end}}</span>
+                                        </div>
+                                        <div id="loc-{{$index}}-{{$location.City}}" class="location-details">
+                                            <p><strong>Artistes :</strong></p>
+                                            <ul>
+                                                {{range $artistIndex, $artistName := $location.Artists}}
+                                                    <li><a href="/artist/{{index $location.ArtistIDs $artistIndex}}" class="artist-link">{{$artistName}}</a></li>
+                                                {{end}}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                {{end}}
+                            </div>
+                        </div>
+                    {{end}}
+                </div>
+            </main>
+        </div>
+    </body>
 </html>

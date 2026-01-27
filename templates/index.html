@@ -4,119 +4,111 @@
         <meta charset="UTF-8">
         <title>Groupie Tracker</title>
         <link rel="stylesheet" href="/static/css/style.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
-        <div class="splash-main">
-            <img src="/static/img/logo-removebg-preview.png" alt="Logo" class="splash-logo">
-        </div>
         <div class="container">
             <aside class="sidebar">
                 <div class="sidebar-logo">
                     <img src="/static/img/light_logo.png" alt="Groupie Tracker">
                 </div>
-            <nav class="sidebar-nav">
-                <a href="/">
-                    <span class="icon">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                        </svg>
-                    </span>
-                    <span>Accueil</span>
-                </a>
-                <a href="/locations">
-                    <span class="icon">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                            <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        </svg>
-                    </span>
-                    <span>Lieux</span>
-                </a>
-            </nav>
-            <div class="line"></div>
-            <div class="sidebar-section-title">Artistes populaires</div>
-            <div class="sidebar-artists">
-                <a href="/artist/1" class="sidebar-artist">
-                    <img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=100" alt="Queen">
-                    <div class="sidebar-artist-info">
-                        <h4>Queen</h4>
-                        <p>4 membres</p>
-                    </div>
-                </a>
-                <a href="/artist/2" class="sidebar-artist">
-                    <img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=100" alt="SOJA">
-                    <div class="sidebar-artist-info">
-                        <h4>SOJA</h4>
-                        <p>8 membres</p>
-                    </div>
-                </a>
-                <a href="/artist/3" class="sidebar-artist">
-                    <img src="https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=100" alt="Pink Floyd">
-                    <div class="sidebar-artist-info">
-                        <h4>Pink Floyd</h4>
-                        <p>4 membres</p>
-                    </div>
-                </a>
-            </div>
-            </aside> 
-
-        <main class="main-content">
-            <div class="search-bar-container">
-    <div class="top-controls">
-        <form action="/" method="GET" class="search-form">
-            <input type="text" name="query" list="suggestions" placeholder="Rechercher un artist..." class="search-input">
-            <datalist id="suggestions">
-                {{range .Artists}}
-                    <option value="{{.Name}}">Artist</option>
-                {{end}}
-            </datalist>
-            <button type="submit" class="search-btn">Search</button>
-        </form>
-
-        <details class="filters-dd">
-            <summary class="filters-trigger">Filtres</summary>
-            <div class="filters-panel">
-                <form action="/" method="GET">
-                    <input type="hidden" name="query" value="{{.Query}}">
-                    
-                    <div class="filter-label">Années de création</div>
-                    <div class="filters-row">
-                        <input type="number" name="minYear" class="filter-input" placeholder="Min" value="{{.MinYear}}">
-                        <input type="number" name="maxYear" class="filter-input" placeholder="Max" value="{{.MaxYear}}">
-                    </div>
-
-                    <div class="filter-group">
-                        <div class="filter-label">Nombre de membres</div>
-                        <div class="members-grid">
-                            {{range $i := .MemberOptions}}
-                                <label class="check">
-                                    <input type="checkbox" name="members" value="{{$i}}" {{if (index $.SelectedMembers $i)}}checked{{end}}>
-                                    <span>{{$i}}</span>
-                                </label>
-                            {{end}}
-                        </div>
-                    </div>
-
-                    <div class="filters-actions">
-                        <button type="submit" class="apply-btn">Apply</button>
-                        <a href="/" class="reset-btn">Reset</a>
-                    </div>
-                </form>
-            </div>
-        </details>
-    </div>
-</div>
-
-            <div class="artists-grid">
-                {{range .Artists}}
-                    <a class="artist-card" href="/artist/{{.Id}}">
-                        <img src="{{.Image}}" alt="{{.Name}}">
-                        <h3>{{.Name}}</h3>
-                        <p>{{len .Members}} membres</p>
+                <nav class="sidebar-nav">
+                    <a href="/">
+                        <span class="icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                            </svg>
+                        </span>
+                        <span>Accueil</span>
                     </a>
-                {{end}}
-            </div>
-        </main>
-    </div> 
-  </body>
+                    <a href="/locations">
+                        <span class="icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                        </span>
+                        <span>Lieux</span>
+                    </a>
+                </nav>
+                <div class="line"></div>
+                <div class="sidebar-section-title">Artistes populaires</div>
+                <div class="sidebar-artists">
+                    <a href="/artist/1" class="sidebar-artist">
+                        <img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=100" alt="Queen">
+                        <div class="sidebar-artist-info">
+                            <h4>Queen</h4>
+                            <p>7 membres</p>
+                        </div>
+                    </a>
+                    <a href="/artist/2" class="sidebar-artist">
+                        <img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=100" alt="SOJA">
+                        <div class="sidebar-artist-info">
+                            <h4>SOJA</h4>
+                            <p>8 membres</p>
+                        </div>
+                    </a>
+                    <a href="/artist/3" class="sidebar-artist">
+                        <img src="https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=100" alt="Pink Floyd">
+                        <div class="sidebar-artist-info">
+                            <h4>Pink Floyd</h4>
+                            <p>4 membres</p>
+                        </div>
+                    </a>
+                </div>
+            </aside> 
+            <main class="main-content">
+                <div class="search-bar-container">
+                    <div class="top-controls">
+                        <form action="/" method="GET" class="search-form">
+                            <input type="text" name="query" list="suggestions" placeholder="Rechercher un artiste..." class="search-input">
+                            <datalist id="suggestions">
+                                {{range .Artists}}
+                                    <option value="{{.Name}}">Artist</option>
+                                {{end}}
+                            </datalist>
+                            <button type="submit" class="search-btn">Search</button>
+                        </form>
+                        <details class="filters-dd">
+                            <summary class="filters-trigger">Filtres</summary>
+                            <div class="filters-panel">
+                                <form action="/" method="GET">
+                                    <input type="hidden" name="query" value="{{.Query}}">
+                                    <div class="filter-label">Années de création</div>
+                                    <div class="filters-row">
+                                        <input type="number" name="minYear" class="filter-input" placeholder="Min" value="{{.MinYear}}">
+                                        <input type="number" name="maxYear" class="filter-input" placeholder="Max" value="{{.MaxYear}}">
+                                    </div>
+                                    <div class="filter-group">
+                                        <div class="filter-label">Nombre de membres</div>
+                                        <div class="members-grid">
+                                            {{range $i := .MemberOptions}}
+                                                <label class="check">
+                                                    <input type="checkbox" name="members" value="{{$i}}" {{if (index $.SelectedMembers $i)}}checked{{end}}>
+                                                    <span>{{$i}}</span>
+                                                </label>
+                                            {{end}}
+                                        </div>
+                                    </div>
+                                    <div class="filters-actions">
+                                        <button type="submit" class="apply-btn">Apply</button>
+                                        <a href="/" class="reset-btn">Reset</a>
+                                    </div>
+                                </form>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+                <div class="artists-grid">
+                    {{range .Artists}}
+                        <a class="artist-card" href="/artist/{{.Id}}">
+                            <img src="{{.Image}}" alt="{{.Name}}">
+                            <h3>{{.Name}}</h3>
+                            <p>{{len .Members}} membres</p>
+                        </a>
+                    {{end}}
+                </div>
+            </main>
+        </div> 
+    </body>
 </html>

@@ -5,13 +5,12 @@ import (
 	"html/template"
 	"net/http"
 	"sort"
-	"strconv"
 	"strings"
 )
 
 func homeHandler(tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/" {
+		if r.URL.Path != "/tracker" {
 			http.NotFound(w, r)
 			return
 		}
@@ -37,23 +36,8 @@ func homeHandler(tmpl *template.Template) http.HandlerFunc {
 		filtered := make([]Artist, 0, len(artists))
 		for _, artist := range artists {
 			if query != "" {
-				match := strings.Contains(strings.ToLower(artist.Name), query)
-
-				if !match {
-					for _, member := range artist.Members {
-						if strings.Contains(strings.ToLower(member), query) {
-							match = true
-							break
-						}
-					}
-				}
-
-				if !match {
-					if strings.Contains(strconv.Itoa(artist.CreationDate), query) || strings.Contains(strings.ToLower(artist.FirstAlbum), query) {
-						match = true
-					}
-				}
-				if !match {
+				name := strings.ToLower(artist.Name)
+				if !strings.HasPrefix(name, query) {
 					continue
 				}
 			}
