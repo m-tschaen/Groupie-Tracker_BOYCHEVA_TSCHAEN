@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+
 * {
     margin: 0;
     padding: 0;
@@ -109,7 +110,7 @@ body{
 
 @keyframes logoFadeIn {
     from { opacity: 0; }
-    to   { opacity: 1; }
+    to { opacity: 1; }
 }
 
 @keyframes splashOut {
@@ -117,7 +118,7 @@ body{
 }
 
 @keyframes showSite {
-  to { visibility: visible; }
+    to { visibility: visible; }
 }
 
 .sidebar-artist {
@@ -150,8 +151,8 @@ body{
 .sidebar-artist:hover img {
     border-color: #a8d8a8;
     filter: drop-shadow(0 0 4px #a8d8a8)
-            drop-shadow(0 0 8px #a8d8a8)
-            drop-shadow(0 0 12px #a8d8a8);
+           drop-shadow(0 0 8px #a8d8a8)
+           drop-shadow(0 0 12px #a8d8a8);
 }
 
 .sidebar-artist-info h4 {
@@ -294,10 +295,12 @@ body{
 .relation-card li {
     margin-bottom: 6px;
 }
+
 .artist-page {
     max-width: 1200px;
     margin-right: auto;
 }
+
 .main-content.artist-page {
     margin-left: 0 !important;
     width: 100% !important;
@@ -310,77 +313,82 @@ body{
 }
 
 .artist-sidebar{
-  width: 340px;
-  position: sticky;
-  top: 28px;
-  align-self: flex-start;
-  background: #3d4e35;
-  border: 1px solid rgba(143,188,143,0.25);
-  border-radius: 22px;
-  padding: 26px;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+    width: 340px;
+    position: sticky;
+    top: 28px;
+    align-self: flex-start;
+    background: #3d4e35;
+    border: 1px solid rgba(143,188,143,0.25);
+    border-radius: 22px;
+    padding: 26px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.35);
 }
+
 .artist-sidebar .back-link{
-  display: inline-block;
-  background: transparent;
-  border: none;
-  padding: 0;
-  margin-bottom: 18px;
-  color: #cdd7bf;
-  opacity: 0.9;
-  font-size: 0.95rem;
+    display: inline-block;
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin-bottom: 18px;
+    color: #cdd7bf;
+    opacity: 0.9;
+    font-size: 0.95rem;
 }
+
 .artist-sidebar .back-link:hover{
-  text-decoration: underline;
+    text-decoration: underline;
 }
+
 .artist-sidebar .artist-header{
-  background: transparent;
-  border: none;
-  padding: 0;
-  margin: 0;
-
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  align-items: center;
-  text-align: center;
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    align-items: center;
+    text-align: center;
 }
+
 .artist-sidebar .artist-detail-img{
-  width: 220px;
-  height: 220px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid rgba(143,188,143,0.45);
-  box-shadow: 0 0 0 10px #3d4e35;
-}
-.artist-sidebar .artist-info h1{
-  font-size: 3rem;
-  line-height: 1.05;
-  color: #f1f2ea;
-  margin-bottom: 6px;
-}
-.artist-sidebar .artist-info p{
-  color: #cfd8c2;
-  opacity: 0.9;
-  font-size: 1rem;
-  margin-top: 8px;
-}
-.artist-sidebar .artist-info strong{
-  color: #b7c7a6;
-  font-weight: 700;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid rgba(143,188,143,0.45);
+    box-shadow: 0 0 0 10px #3d4e35;
 }
 
+.artist-sidebar .artist-info h1{
+    font-size: 3rem;
+    line-height: 1.05;
+    color: #f1f2ea;
+    margin-bottom: 6px;
+}
+
+.artist-sidebar .artist-info p{
+    color: #cfd8c2;
+    opacity: 0.9;
+    font-size: 1rem;
+    margin-top: 8px;
+}
+
+.artist-sidebar .artist-info strong{
+    color: #b7c7a6;
+    font-weight: 700;
+}
 
 .search-bar-container {
     width: 100%;
     margin-bottom: 40px;
-    display: block; 
+    display: block;
 }
 
 .top-controls {
     display: flex;
     align-items: center;
-    gap: 15px; 
+    gap: 15px;
     width: 100%;
     position: relative;
 }
@@ -388,7 +396,7 @@ body{
 .search-form {
     display: flex;
     background: #3d4e35;
-    border-radius: 50px; 
+    border-radius: 50px;
     padding: 5px;
     border: 1px solid rgba(143, 188, 143, 0.3);
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
@@ -396,7 +404,7 @@ body{
 }
 
 .search-input {
-    background: transparent !important; 
+    background: transparent !important;
     border: none !important;
     padding: 12px 25px !important;
     width: 100% !important;
@@ -407,7 +415,7 @@ body{
 .search-btn {
     background: #8fbc8f !important;
     color: #1a2e1a !important;
-    border-radius: 50px !important; 
+    border-radius: 50px !important;
     padding: 10px 25px !important;
     border: none !important;
     transition: all 0.3s ease !important;
@@ -436,7 +444,6 @@ body{
     transition: 0.3s;
 }
 
-
 .filters-panel {
     background: #2a3a25 !important;
     border: 1px solid #8fbc8f !important;
@@ -455,7 +462,7 @@ body{
 }
 
 .check input[type="checkbox"] {
-    accent-color: #8fbc8f; 
+    accent-color: #8fbc8f;
     width: 18px;
     height: 18px;
     cursor: pointer;
