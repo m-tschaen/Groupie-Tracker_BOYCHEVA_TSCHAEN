@@ -1,6 +1,8 @@
 package main
 
 import (
+	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 	"unicode"
@@ -74,4 +76,33 @@ func selectedMembersSet(vals []string) map[int]bool {
 		}
 	}
 	return set
+}
+
+func readFavoritesCookie(r *http.Request) map[int]bool {
+	favs := map[int]bool{}
+	c, err := r.Cookie("favorites")
+	if err != nil || strings.TrimSpace(c.Value) == "" {
+		return favs
+	}
+	parts := strings.Split(c.Value, ",")
+	for _, p := range parts {
+		p = strings.TrimSpace(p)
+		if id, ok := parseInt(p); ok {
+			favs[id] = true
+		}
+	}
+	return favs
+}
+
+func writeFavoritesCookie(w http.ResponseWriter, favs map[int]bool) {
+	values := make([]string, 0, len(favs))
+	for id := range favs {
+		values = append(values, strconv.Itoa(id))
+	}
+	sort.Strings(values)
+	http.SetCookie(w, &http.Cookie{
+		Name:  "favorites",
+		Value: strings.Join(values, ","),
+		Path:  "/",
+	})
 }

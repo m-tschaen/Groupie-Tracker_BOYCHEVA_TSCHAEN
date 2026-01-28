@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"sort"
 	"strings"
+	"strconv"
 )
 
 func homeHandler(tmpl *template.Template) http.HandlerFunc {
@@ -54,7 +55,7 @@ func homeHandler(tmpl *template.Template) http.HandlerFunc {
 			}
 			filtered = append(filtered, artist)
 		}
-		
+
 		opts := []int{1, 2, 3, 4, 5, 6, 7, 8}
 		data := IndexPageData{
 			Artists:         filtered,
@@ -139,11 +140,14 @@ func artistHandler(tmpl *template.Template) http.HandlerFunc {
 			formattedLocations = append(formattedLocations, formatPlace(l))
 		}
 
+		favs := readFavoritesCookie(r)
+
 		data := ArtistPageData{
 			Artist:        *found,
 			Locations:     formattedLocations,
 			Dates:         dateRes.Dates,
 			RelationItems: items,
+			Favorites:     favs,
 		}
 
 		tmpl.ExecuteTemplate(w, "artist.html", data)
@@ -225,5 +229,66 @@ func locationsHandler(tmpl *template.Template) http.HandlerFunc {
 		})
 
 		tmpl.ExecuteTemplate(w, "locations.html", LocationsPageData{Continents: continents})
+	}
+}
+
+func favoriteHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("id")
+	id, ok := parseInt(idStr)
+	if !ok {
+		http.Redirect(w, r, "/tracker", http.StatusSeeOther)
+		return
+	}
+	favs := readFavoritesCookie(r)
+
+	if favs[id] {
+		delete(favs, id)
+	} else {
+		favs[id] = true
+	}
+
+	writeFavoritesCookie(w, favs)
+	back := r.URL.Query().Get("back")
+	if back == "favorites" {
+		http.Redirect(w, r, "/favorites", http.StatusSeeOther)
+		return
+	}
+	if back == "artist" {
+        http.Redirect(w, r, "/artist/"+strconv.Itoa(id), http.StatusSeeOther)
+        return
+    }
+	http.Redirect(w, r, "/tracker", http.StatusSeeOther)
+}
+
+func favoritesPageHandler(tmpl *template.Template) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/favorites" {
+			http.NotFound(w, r)
+			return
+		}
+
+		artists, err := fetchArtists()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		favs := readFavoritesCookie(r)
+
+		onlyFav := make([]Artist, 0)
+		for _, a := range artists {
+			if favs[a.Id] {
+				onlyFav = append(onlyFav, a)
+			}
+		}
+
+		data := IndexPageData{
+			Artists:    onlyFav,
+		}
+
+		if err := tmpl.ExecuteTemplate(w, "favorites.html", data); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 }

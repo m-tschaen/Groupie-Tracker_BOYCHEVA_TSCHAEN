@@ -828,3 +828,44 @@ input[type=number]::-webkit-inner-spin-button {
     background-color: #ffffff;
     transform: scale(1.05);
 }
+
+.artist-card-wrapper {
+    position: relative;
+}
+
+.fav-title {
+    color: #335439;
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 25px;
+    text-align: center;
+}
+.no-fav-message {
+    color: #3b523b;
+    font-size: 1.1rem;
+    text-align: center;
+}
+.artist-card-wrapper{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.fav-icon-btn{
+  text-decoration: none;
+  display: inline-flex;
+}
+
+.fav-icon{
+  width: 26px;
+  height: 26px;
+  color: #e8dcc8;
+  transition: transform .2s ease, color .2s ease;
+}
+
+.fav-icon.active{
+  color: #8fbc8f;
+}
+
+.fav-icon-btn:hover .fav-icon{
+  transform: scale(1.15);
+}

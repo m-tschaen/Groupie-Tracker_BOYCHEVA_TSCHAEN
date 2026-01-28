@@ -38,6 +38,7 @@ type ArtistPageData struct {
 	Locations     []string
 	Dates         []string
 	RelationItems []RelationItem
+	Favorites     map[int]bool
 }
 
 type LocationMarker struct {
@@ -69,4 +70,5 @@ type IndexPageData struct {
 	MaxYear         string
 	MemberOptions   []int
 	SelectedMembers map[int]bool
+	Favorites       map[int]bool
 }
