@@ -2,7 +2,7 @@
 
 ## Auteurs
 * TSCHAEN Morgane
-* MARTIN BOEHM Robin
+* BOYCHEVA Ivana
 
 Projet réalisé dans le cadre du cursus Ynov Campus Strasbourg - Année 2025-2026
 
