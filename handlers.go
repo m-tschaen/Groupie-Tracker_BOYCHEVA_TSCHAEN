@@ -71,6 +71,7 @@ func homeHandler(tmpl *template.Template) http.HandlerFunc {
 			filtered = append(filtered, artist)
 		}
 		
+		favs := readFavoritesCookie(r)
 		opts := []int{1, 2, 3, 4, 5, 6, 7, 8}
 		data := IndexPageData{
 			Artists:         filtered,
@@ -79,6 +80,7 @@ func homeHandler(tmpl *template.Template) http.HandlerFunc {
 			MaxYear:         maxYearStr,
 			MemberOptions:   opts,
 			SelectedMembers: selected,
+			Favorites: favs,
 		}
 
 		if err := tmpl.ExecuteTemplate(w, "index.html", data); err != nil {
@@ -155,11 +157,13 @@ func artistHandler(tmpl *template.Template) http.HandlerFunc {
 			formattedLocations = append(formattedLocations, formatPlace(l))
 		}
 
+		favs := readFavoritesCookie(r)
 		data := ArtistPageData{
 			Artist:        *found,
 			Locations:     formattedLocations,
 			Dates:         dateRes.Dates,
 			RelationItems: items,
+			Favorites: favs,
 		}
 
 		tmpl.ExecuteTemplate(w, "artist.html", data)
@@ -277,7 +281,6 @@ func compareHandler(tmpl *template.Template) http.HandlerFunc {
 				}
 			}
 
-			// Charger les relations de l'artiste 1
 			if data.Artist1 != nil {
 				var relRes RelationsResponse
 				if err := fetchJSON(data.Artist1.Relations, &relRes); err == nil {
