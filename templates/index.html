@@ -60,7 +60,7 @@
             <main class="main-content">
                 <div class="search-bar-container">
                     <div class="top-controls">
-                        <form action="/" method="GET" class="search-form">
+                        <form action="/tracker" method="GET" class="search-form">
                             <input type="text" name="query" list="suggestions" placeholder="Rechercher un artiste..." class="search-input">
                             <datalist id="suggestions">
                                 {{range .Artists}}
@@ -72,7 +72,7 @@
                         <details class="filters-dd">
                             <summary class="filters-trigger">Filtres</summary>
                             <div class="filters-panel">
-                                <form action="/" method="GET">
+                                <form action="/tracker" method="GET">
                                     <input type="hidden" name="query" value="{{.Query}}">
                                     <div class="filter-label">Années de création</div>
                                     <div class="filters-row">
