@@ -270,7 +270,7 @@ body{
 }
 
 .main-content.artist-page {
-    margin-left: 0 !important;
+    margin-left: 280 !important;
     width: 100% !important;
     max-width: 1200px;
     margin: 0 auto;
@@ -359,6 +359,7 @@ body{
     gap: 15px;
     width: 100%;
     position: relative;
+    z-index: 50;
 }
 
 .search-form {
@@ -399,6 +400,7 @@ body{
 
 .filters-dd {
     position: relative;
+    z-index: 100;
 }
 
 .filters-trigger {
@@ -412,6 +414,14 @@ body{
     transition: 0.3s;
 }
 
+.filters-section {
+    display: block !important;
+    width: 100% !important;
+    margin-bottom: 50px !important;
+    position: relative !important;
+    clear: both;
+}
+
 .filters-panel{
   position: absolute;
   background-color: #1f2f1f;
@@ -422,6 +432,7 @@ body{
   box-shadow: 0 12px 30px rgba(0,0,0,.25);
   border-radius: 18px;
   padding: 16px;
+  z-index: 200;
 }
 .filters-dd{ position: relative; }
 
