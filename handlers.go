@@ -5,8 +5,8 @@ import (
 	"html/template"
 	"net/http"
 	"sort"
-	"strings"
 	"strconv"
+	"strings"
 )
 
 func homeHandler(tmpl *template.Template) http.HandlerFunc {
@@ -37,8 +37,23 @@ func homeHandler(tmpl *template.Template) http.HandlerFunc {
 		filtered := make([]Artist, 0, len(artists))
 		for _, artist := range artists {
 			if query != "" {
-				name := strings.ToLower(artist.Name)
-				if !strings.HasPrefix(name, query) {
+				match := strings.Contains(strings.ToLower(artist.Name), query)
+
+				if !match {
+					for _, member := range artist.Members {
+						if strings.Contains(strings.ToLower(member), query) {
+							match = true
+							break
+						}
+					}
+				}
+
+				if !match {
+					if strings.Contains(strconv.Itoa(artist.CreationDate), query) || strings.Contains(strings.ToLower(artist.FirstAlbum), query) {
+						match = true
+					}
+				}
+				if !match {
 					continue
 				}
 			}
@@ -55,7 +70,7 @@ func homeHandler(tmpl *template.Template) http.HandlerFunc {
 			}
 			filtered = append(filtered, artist)
 		}
-
+		
 		opts := []int{1, 2, 3, 4, 5, 6, 7, 8}
 		data := IndexPageData{
 			Artists:         filtered,
@@ -140,14 +155,11 @@ func artistHandler(tmpl *template.Template) http.HandlerFunc {
 			formattedLocations = append(formattedLocations, formatPlace(l))
 		}
 
-		favs := readFavoritesCookie(r)
-
 		data := ArtistPageData{
 			Artist:        *found,
 			Locations:     formattedLocations,
 			Dates:         dateRes.Dates,
 			RelationItems: items,
-			Favorites:     favs,
 		}
 
 		tmpl.ExecuteTemplate(w, "artist.html", data)
@@ -232,6 +244,94 @@ func locationsHandler(tmpl *template.Template) http.HandlerFunc {
 	}
 }
 
+func compareHandler(tmpl *template.Template) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		artists, err := fetchArtists()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		id1Str := r.URL.Query().Get("artist1")
+		id2Str := r.URL.Query().Get("artist2")
+
+		data := ComparePageData{
+			AllArtists: artists,
+		}
+
+		// Si deux artistes sont sélectionnés, charger leurs données
+		if id1Str != "" && id2Str != "" {
+			// Trouver l'artiste 1
+			for i := range artists {
+				if fmt.Sprint(artists[i].Id) == id1Str {
+					data.Artist1 = &artists[i]
+					break
+				}
+			}
+
+			// Trouver l'artiste 2
+			for i := range artists {
+				if fmt.Sprint(artists[i].Id) == id2Str {
+					data.Artist2 = &artists[i]
+					break
+				}
+			}
+
+			// Charger les relations de l'artiste 1
+			if data.Artist1 != nil {
+				var relRes RelationsResponse
+				if err := fetchJSON(data.Artist1.Relations, &relRes); err == nil {
+					keys := make([]string, 0, len(relRes.DatesLocation))
+					for k := range relRes.DatesLocation {
+						keys = append(keys, k)
+					}
+					sort.Strings(keys)
+
+					items := make([]RelationItem, 0, len(keys))
+					for _, k := range keys {
+						dates := relRes.DatesLocation[k]
+						for i := range dates {
+							dates[i] = formatDate(dates[i])
+						}
+						items = append(items, RelationItem{
+							Place: formatPlace(k),
+							Dates: dates,
+						})
+					}
+					data.Relations1 = items
+				}
+			}
+
+			// Charger les relations de l'artiste 2
+			if data.Artist2 != nil {
+				var relRes RelationsResponse
+				if err := fetchJSON(data.Artist2.Relations, &relRes); err == nil {
+					keys := make([]string, 0, len(relRes.DatesLocation))
+					for k := range relRes.DatesLocation {
+						keys = append(keys, k)
+					}
+					sort.Strings(keys)
+
+					items := make([]RelationItem, 0, len(keys))
+					for _, k := range keys {
+						dates := relRes.DatesLocation[k]
+						for i := range dates {
+							dates[i] = formatDate(dates[i])
+						}
+						items = append(items, RelationItem{
+							Place: formatPlace(k),
+							Dates: dates,
+						})
+					}
+					data.Relations2 = items
+				}
+			}
+		}
+
+		tmpl.ExecuteTemplate(w, "compare.html", data)
+	}
+}
+
 func favoriteHandler(w http.ResponseWriter, r *http.Request) {
 	idStr := r.URL.Query().Get("id")
 	id, ok := parseInt(idStr)
@@ -254,9 +354,9 @@ func favoriteHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if back == "artist" {
-        http.Redirect(w, r, "/artist/"+strconv.Itoa(id), http.StatusSeeOther)
-        return
-    }
+		http.Redirect(w, r, "/artist/"+strconv.Itoa(id), http.StatusSeeOther)
+		return
+	}
 	http.Redirect(w, r, "/tracker", http.StatusSeeOther)
 }
 
@@ -283,7 +383,8 @@ func favoritesPageHandler(tmpl *template.Template) http.HandlerFunc {
 		}
 
 		data := IndexPageData{
-			Artists:    onlyFav,
+			Artists:   onlyFav,
+			Favorites: favs,
 		}
 
 		if err := tmpl.ExecuteTemplate(w, "favorites.html", data); err != nil {

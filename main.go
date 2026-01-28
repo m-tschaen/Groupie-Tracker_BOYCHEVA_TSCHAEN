@@ -17,15 +17,16 @@ func main() {
 		template.New("root").Funcs(template.FuncMap{
 			"formatPlace": formatPlace,
 			"formatDate":  formatDate,
-		}).ParseFiles("templates/welcome.html", "templates/index.html", "templates/artist.html", "templates/locations.html", "templates/favorites.html"),
+		}).ParseFiles("templates/welcome.html", "templates/index.html", "templates/artist.html", "templates/locations.html", "templates/compare.html", "templates/favorites.html"),
 	)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		tmpl.ExecuteTemplate(w, "welcome.html", nil)
-    })
+	})
 	http.HandleFunc("/tracker", homeHandler(tmpl))
 	http.HandleFunc("/artist/", artistHandler(tmpl))
 	http.HandleFunc("/locations", locationsHandler(tmpl))
+	http.HandleFunc("/compare", compareHandler(tmpl))
 	http.HandleFunc("/favorite", favoriteHandler)
 	http.HandleFunc("/favorites", favoritesPageHandler(tmpl))
 

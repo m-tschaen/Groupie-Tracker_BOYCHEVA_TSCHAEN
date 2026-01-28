@@ -1,5 +1,6 @@
 package main
 
+// Structures pour l'API
 type Artist struct {
 	Id           int      `json:"id"`
 	Image        string   `json:"image"`
@@ -28,6 +29,7 @@ type RelationsResponse struct {
 	DatesLocation map[string][]string `json:"datesLocations"`
 }
 
+// Structures pour les pages
 type RelationItem struct {
 	Place string
 	Dates []string
@@ -71,4 +73,12 @@ type IndexPageData struct {
 	MemberOptions   []int
 	SelectedMembers map[int]bool
 	Favorites       map[int]bool
+}
+
+type ComparePageData struct {
+	AllArtists []Artist
+	Artist1    *Artist
+	Artist2    *Artist
+	Relations1 []RelationItem
+	Relations2 []RelationItem
 }
