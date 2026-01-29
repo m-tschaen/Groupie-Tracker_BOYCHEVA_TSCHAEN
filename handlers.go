@@ -9,16 +9,66 @@ import (
 	"strings"
 )
 
+type ErrorData struct {
+	Code    int
+	Title   string
+	Message string
+}
+
+func errorHandler(w http.ResponseWriter, tmpl *template.Template, code int, message string) {
+	w.WriteHeader(code)
+	
+	var title string
+	var msg string
+	
+	switch code {
+	case 404:
+		title = "Page introuvable"
+		if message == "" {
+			msg = "Désolé, la page que vous recherchez n'existe pas ou a été déplacée."
+		} else {
+			msg = message
+		}
+	case 400:
+		title = "Requête invalide"
+		if message == "" {
+			msg = "Les paramètres de votre requête sont incorrects."
+		} else {
+			msg = message
+		}
+	case 500:
+		title = "Erreur serveur"
+		if message == "" {
+			msg = "Une erreur interne s'est produite. Veuillez réessayer plus tard."
+		} else {
+			msg = message
+		}
+	default:
+		title = "Erreur"
+		msg = message
+	}
+	
+	data := ErrorData{
+		Code:    code,
+		Title:   title,
+		Message: msg,
+	}
+	
+	if err := tmpl.ExecuteTemplate(w, "error.html", data); err != nil {
+		http.Error(w, fmt.Sprintf("%d - %s", code, title), code)
+	}
+}
+
 func homeHandler(tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/tracker" {
-			http.NotFound(w, r)
+			errorHandler(w, tmpl, 404, "")
 			return
 		}
 
 		artists, err := fetchArtists()
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			errorHandler(w, tmpl, 500, "Impossible de récupérer les données.")
 			return
 		}
 
@@ -31,8 +81,38 @@ func homeHandler(tmpl *template.Template) http.HandlerFunc {
 		minYear, hasMin := parseInt(minYearStr)
 		maxYear, hasMax := parseInt(maxYearStr)
 
+		// Validation des paramètres d'années
+		if minYearStr != "" && !hasMin {
+			errorHandler(w, tmpl, 400, "L'année minimale doit être un nombre valide.")
+			return
+		}
+		if maxYearStr != "" && !hasMax {
+			errorHandler(w, tmpl, 400, "L'année maximale doit être un nombre valide.")
+			return
+		}
+		if hasMin && (minYear < 1900 || minYear > 2100) {
+			errorHandler(w, tmpl, 400, "L'année minimale doit être entre 1900 et 2100.")
+			return
+		}
+		if hasMax && (maxYear < 1900 || maxYear > 2100) {
+			errorHandler(w, tmpl, 400, "L'année maximale doit être entre 1900 et 2100.")
+			return
+		}
+		if hasMin && hasMax && minYear > maxYear {
+			errorHandler(w, tmpl, 400, "L'année minimale ne peut pas être supérieure à l'année maximale.")
+			return
+		}
+
 		membersVals := r.URL.Query()["members"]
 		selected := selectedMembersSet(membersVals)
+
+		// Validation du nombre de membres
+		for memberCount := range selected {
+			if memberCount < 1 || memberCount > 10 {
+				errorHandler(w, tmpl, 400, "Le nombre de membres doit être entre 1 et 10.")
+				return
+			}
+		}
 
 		filtered := make([]Artist, 0, len(artists))
 		for _, artist := range artists {
@@ -84,7 +164,7 @@ func homeHandler(tmpl *template.Template) http.HandlerFunc {
 		}
 
 		if err := tmpl.ExecuteTemplate(w, "index.html", data); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			errorHandler(w, tmpl, 500, "Impossible de récupérer les données.")
 			return
 		}
 	}
@@ -94,13 +174,19 @@ func artistHandler(tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idStr := r.URL.Path[len("/artist/"):]
 		if idStr == "" {
-			http.NotFound(w, r)
+			errorHandler(w, tmpl, 404, "")
+			return
+		}
+
+		// Validation de l'ID
+		if _, err := strconv.Atoi(idStr); err != nil {
+			errorHandler(w, tmpl, 400, "L'ID de l'artiste doit être un nombre valide.")
 			return
 		}
 
 		artists, err := fetchArtists()
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			errorHandler(w, tmpl, 500, "Impossible de récupérer les données.")
 			return
 		}
 
@@ -112,7 +198,7 @@ func artistHandler(tmpl *template.Template) http.HandlerFunc {
 			}
 		}
 		if found == nil {
-			http.NotFound(w, r)
+			errorHandler(w, tmpl, 404, "Cet artiste n'existe pas.")
 			return
 		}
 
@@ -121,15 +207,15 @@ func artistHandler(tmpl *template.Template) http.HandlerFunc {
 		var relRes RelationsResponse
 
 		if err := fetchJSON(found.Locations, &locRes); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			errorHandler(w, tmpl, 500, "Impossible de récupérer les données.")
 			return
 		}
 		if err := fetchJSON(found.ConcertDates, &dateRes); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			errorHandler(w, tmpl, 500, "Impossible de récupérer les données.")
 			return
 		}
 		if err := fetchJSON(found.Relations, &relRes); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			errorHandler(w, tmpl, 500, "Impossible de récupérer les données.")
 			return
 		}
 
@@ -166,13 +252,20 @@ func artistHandler(tmpl *template.Template) http.HandlerFunc {
 			Favorites: favs,
 		}
 
-		tmpl.ExecuteTemplate(w, "artist.html", data)
+		if err := tmpl.ExecuteTemplate(w, "artist.html", data); err != nil {
+			errorHandler(w, tmpl, 500, "Erreur lors de l'affichage de la page.")
+			return
+		}
 	}
 }
 
 func locationsHandler(tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		artists, _ := fetchArtists()
+		artists, err := fetchArtists()
+		if err != nil {
+			errorHandler(w, tmpl, 500, "Impossible de récupérer les artistes pour la carte.")
+			return
+		}
 		locationMap := make(map[string]*LocationMarker)
 
 		for _, artist := range artists {
@@ -244,7 +337,10 @@ func locationsHandler(tmpl *template.Template) http.HandlerFunc {
 			return continents[i].TotalConcerts > continents[j].TotalConcerts
 		})
 
-		tmpl.ExecuteTemplate(w, "locations.html", LocationsPageData{Continents: continents})
+		if err := tmpl.ExecuteTemplate(w, "locations.html", LocationsPageData{Continents: continents}); err != nil {
+			errorHandler(w, tmpl, 500, "Erreur lors de l'affichage de la carte.")
+			return
+		}
 	}
 }
 
@@ -252,7 +348,7 @@ func compareHandler(tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		artists, err := fetchArtists()
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			errorHandler(w, tmpl, 500, "Impossible de récupérer les données.")
 			return
 		}
 
@@ -265,6 +361,16 @@ func compareHandler(tmpl *template.Template) http.HandlerFunc {
 
 		// Si deux artistes sont sélectionnés, charger leurs données
 		if id1Str != "" && id2Str != "" {
+			// Validation des IDs
+			if _, err := strconv.Atoi(id1Str); err != nil {
+				errorHandler(w, tmpl, 400, "L'ID du premier artiste doit être un nombre valide.")
+				return
+			}
+			if _, err := strconv.Atoi(id2Str); err != nil {
+				errorHandler(w, tmpl, 400, "L'ID du deuxième artiste doit être un nombre valide.")
+				return
+			}
+
 			// Trouver l'artiste 1
 			for i := range artists {
 				if fmt.Sprint(artists[i].Id) == id1Str {
@@ -279,6 +385,16 @@ func compareHandler(tmpl *template.Template) http.HandlerFunc {
 					data.Artist2 = &artists[i]
 					break
 				}
+			}
+
+			// Vérifier que les deux artistes existent
+			if data.Artist1 == nil {
+				errorHandler(w, tmpl, 404, "Le premier artiste n'existe pas.")
+				return
+			}
+			if data.Artist2 == nil {
+				errorHandler(w, tmpl, 404, "Le deuxième artiste n'existe pas.")
+				return
 			}
 
 			if data.Artist1 != nil {
@@ -331,48 +447,73 @@ func compareHandler(tmpl *template.Template) http.HandlerFunc {
 			}
 		}
 
-		tmpl.ExecuteTemplate(w, "compare.html", data)
+		if err := tmpl.ExecuteTemplate(w, "compare.html", data); err != nil {
+			errorHandler(w, tmpl, 500, "Erreur lors de l'affichage de la comparaison.")
+			return
+		}
 	}
 }
 
-func favoriteHandler(w http.ResponseWriter, r *http.Request) {
-	idStr := r.URL.Query().Get("id")
-	id, ok := parseInt(idStr)
-	if !ok {
+func favoriteHandler(tmpl *template.Template) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		idStr := r.URL.Query().Get("id")
+		id, ok := parseInt(idStr)
+		if !ok {
+			errorHandler(w, tmpl, 400, "L'ID du favori est invalide.")
+			return
+		}
+
+		// Vérifier que l'artiste existe
+		artists, err := fetchArtists()
+		if err != nil {
+			errorHandler(w, tmpl, 500, "Impossible de vérifier l'artiste.")
+			return
+		}
+
+		found := false
+		for _, artist := range artists {
+			if artist.Id == id {
+				found = true
+				break
+			}
+		}
+		if !found {
+			errorHandler(w, tmpl, 404, "Cet artiste n'existe pas.")
+			return
+		}
+
+		favs := readFavoritesCookie(r)
+
+		if favs[id] {
+			delete(favs, id)
+		} else {
+			favs[id] = true
+		}
+
+		writeFavoritesCookie(w, favs)
+		back := r.URL.Query().Get("back")
+		if back == "favorites" {
+			http.Redirect(w, r, "/favorites", http.StatusSeeOther)
+			return
+		}
+		if back == "artist" {
+			http.Redirect(w, r, "/artist/"+strconv.Itoa(id), http.StatusSeeOther)
+			return
+		}
 		http.Redirect(w, r, "/tracker", http.StatusSeeOther)
-		return
 	}
-	favs := readFavoritesCookie(r)
-
-	if favs[id] {
-		delete(favs, id)
-	} else {
-		favs[id] = true
-	}
-
-	writeFavoritesCookie(w, favs)
-	back := r.URL.Query().Get("back")
-	if back == "favorites" {
-		http.Redirect(w, r, "/favorites", http.StatusSeeOther)
-		return
-	}
-	if back == "artist" {
-		http.Redirect(w, r, "/artist/"+strconv.Itoa(id), http.StatusSeeOther)
-		return
-	}
-	http.Redirect(w, r, "/tracker", http.StatusSeeOther)
 }
 
 func favoritesPageHandler(tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/favorites" {
-			http.NotFound(w, r)
+			errorHandler(w, tmpl, 404, "")
 			return
 		}
 
 		artists, err := fetchArtists()
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			errorHandler(w, tmpl, 500, "Impossible de récupérer les données.")
 			return
 		}
 
@@ -391,7 +532,7 @@ func favoritesPageHandler(tmpl *template.Template) http.HandlerFunc {
 		}
 
 		if err := tmpl.ExecuteTemplate(w, "favorites.html", data); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			errorHandler(w, tmpl, 500, "Impossible de récupérer les données.")
 			return
 		}
 	}
