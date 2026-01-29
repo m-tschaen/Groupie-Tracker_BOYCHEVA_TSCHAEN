@@ -308,11 +308,11 @@ Effet visuel :
 
 | Bonus | Statut | Page/Fonctionnalité |
 |-------|--------|---------------------|
-| Visualisations (Carte) | ✅ Implémenté | `/locations` |
-| Filtres | ✅ Implémenté | `/tracker` (menu Filtres) |
-| Barre de recherche | ✅ Implémenté | `/tracker` (barre en haut) |
-| Favoris | ✅ Implémenté | `/favorites` + icônes partout |
-| Comparaison | ✅ Implémenté | `/compare` |
+| Visualisations (Carte) |  Implémenté | `/locations` |
+| Filtres |  Implémenté | `/tracker` (menu Filtres) |
+| Barre de recherche |  Implémenté | `/tracker` (barre en haut) |
+| Favoris |  Implémenté | `/favorites` + icônes partout |
+| Comparaison |  Implémenté | `/compare` |
 
 **TOUS LES BONUS DEMANDÉS ONT ÉTÉ RÉALISÉS ET SONT FONCTIONNELS.**
 
