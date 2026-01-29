@@ -1,14 +1,19 @@
 document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.querySelector('.search-input');
-    if (!searchInput) return;
+    const searchForm = document.querySelector('.search-form');
+    
+    if (!searchInput || !searchForm) {
+        console.error("Erreur : L'input ou le formulaire de recherche est introuvable.");
+        return;
+    }
 
-    const searchForm = searchInput.closest('.search-form');
-    if (!searchForm) return;
-
-    // On accroche la box au parent (pas dans la form) pour éviter overflow:hidden
+    // Définition de l'hôte pour la box (le parent du formulaire)
     const host = searchForm.parentElement || document.body;
-    if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
+    if (getComputedStyle(host).position === 'static') {
+        host.style.position = 'relative';
+    }
 
+    // Création ou récupération de la box de suggestions
     let suggestionsBox = host.querySelector(':scope > .suggestions-box');
     if (!suggestionsBox) {
         suggestionsBox = document.createElement('div');
@@ -16,34 +21,43 @@ document.addEventListener('DOMContentLoaded', function () {
         host.appendChild(suggestionsBox);
     }
 
-    // Positionner la box juste sous la barre
+    // Fonction de positionnement précise
     function positionBox() {
         const formRect = searchForm.getBoundingClientRect();
         const hostRect = host.getBoundingClientRect();
 
         suggestionsBox.style.position = 'absolute';
+        // Aligné sur la gauche du formulaire
         suggestionsBox.style.left = (formRect.left - hostRect.left) + 'px';
+        // Placé 8px sous le formulaire
         suggestionsBox.style.top = (formRect.top - hostRect.top + formRect.height + 8) + 'px';
         suggestionsBox.style.width = formRect.width + 'px';
         suggestionsBox.style.zIndex = '9999';
     }
 
     window.addEventListener('resize', positionBox);
-    positionBox();
 
+    // Extraction des données depuis les cartes HTML
     let allArtists = [];
-    let currentFocus = -1;
-
     const artistCards = document.querySelectorAll('.artist-card');
+    
     artistCards.forEach(card => {
         const name = card.querySelector('h3')?.textContent?.trim() || '';
         const ps = card.querySelectorAll('p');
+        // ps[0] contient "X membres", ps[1] contient l'année
         const members = ps[0]?.textContent?.trim() || '';
         const year = ps[1]?.textContent?.trim() || '';
-        const id = card.getAttribute('href')?.split('/').pop() || '';
+        const href = card.getAttribute('href') || '';
+        const id = href.split('/').pop() || '';
 
-        if (name) allArtists.push({ name, members, year, id });
+        if (name) {
+            allArtists.push({ name, members, year, id });
+        }
     });
+
+    console.log(`${allArtists.length} artistes chargés pour les suggestions.`);
+
+    let currentFocus = -1;
 
     function highlightMatch(text, query) {
         const safe = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -72,7 +86,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (matches.length === 0) {
             suggestionsBox.innerHTML = '<div class="suggestion-item no-result">Aucun résultat</div>';
             suggestionsBox.style.display = 'block';
-            currentFocus = -1;
             return;
         }
 
@@ -84,8 +97,8 @@ document.addEventListener('DOMContentLoaded', function () {
         `).join('');
 
         suggestionsBox.style.display = 'block';
-        currentFocus = -1;
-
+        
+        // Réattacher les événements de clic
         suggestionsBox.querySelectorAll('.suggestion-item:not(.no-result)').forEach(item => {
             item.addEventListener('click', function () {
                 searchInput.value = this.getAttribute('data-name') || '';
@@ -101,9 +114,14 @@ document.addEventListener('DOMContentLoaded', function () {
         if (currentFocus >= items.length) currentFocus = 0;
         if (currentFocus < 0) currentFocus = items.length - 1;
         items[currentFocus]?.classList.add('active');
+        items[currentFocus]?.scrollIntoView({ block: 'nearest' });
     }
 
-    searchInput.addEventListener('input', e => showSuggestions(e.target.value));
+    // Événements clavier et souris
+    searchInput.addEventListener('input', e => {
+        currentFocus = -1;
+        showSuggestions(e.target.value);
+    });
 
     searchInput.addEventListener('keydown', function (e) {
         const items = suggestionsBox.querySelectorAll('.suggestion-item:not(.no-result)');
@@ -123,14 +141,12 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         } else if (e.key === 'Escape') {
             suggestionsBox.style.display = 'none';
-            currentFocus = -1;
         }
     });
 
     document.addEventListener('click', function (e) {
         if (!searchForm.contains(e.target) && !suggestionsBox.contains(e.target)) {
             suggestionsBox.style.display = 'none';
-            currentFocus = -1;
         }
     });
 

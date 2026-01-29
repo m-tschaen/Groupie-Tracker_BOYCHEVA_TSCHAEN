@@ -113,6 +113,15 @@
 .search-form {
   overflow: visible !important;
 }
+
+.top-controls {
+    position: relative !important; /* Nécessaire pour le positionnement du JS */
+}
+
 .suggestions-box {
-  z-index: 9999;
+    display: none; /* Caché par défaut */
+    position: absolute !important;
+    z-index: 99999 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
