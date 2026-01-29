@@ -1,6 +1,5 @@
 package main
 
-// Structures pour l'API
 type Artist struct {
 	Id           int      `json:"id"`
 	Image        string   `json:"image"`
@@ -29,7 +28,6 @@ type RelationsResponse struct {
 	DatesLocation map[string][]string `json:"datesLocations"`
 }
 
-// Structures pour les pages
 type RelationItem struct {
 	Place string
 	Dates []string

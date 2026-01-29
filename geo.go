@@ -2,6 +2,7 @@ package main
 
 import (
 	"strings"
+	"fmt"
 )
 
 func getCountryCoordinates(country string) (int, int) {
@@ -82,6 +83,7 @@ func getCountryCoordinates(country string) (int, int) {
 
 func getContinent(country string) string {
 	country = strings.ToUpper(strings.TrimSpace(country))
+	country = strings.ReplaceAll(country, " ", "_")  // "NEW ZEALAND" → "NEW_ZEALAND"
 
 	northAmerica := map[string]bool{"USA": true, "CANADA": true, "MEXICO": true}
 	southAmerica := map[string]bool{"BRAZIL": true, "ARGENTINA": true, "CHILE": true, "PERU": true, "COLOMBIA": true, "COSTA_RICA": true}
@@ -109,5 +111,7 @@ func getContinent(country string) string {
 		return "Océanie"
 	}
 
+	
+	fmt.Println(" Pays non classé:", country)
 	return "Autre"
 }
