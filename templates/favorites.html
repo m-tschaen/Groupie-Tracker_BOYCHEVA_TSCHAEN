@@ -46,6 +46,7 @@
                                 <img src="{{.Image}}" alt="{{.Name}}">
                                 <h3>{{.Name}}</h3>
                                 <p>{{len .Members}} membres</p>
+                                <p>{{.CreationDate}}</p>
                             </a>
                             <a href="/favorite?id={{.Id}}&back=favorites" class="fav-icon-btn" aria-label="Favori">
                                 {{if index $.Favorites .Id}}

@@ -81,7 +81,7 @@ func homeHandler(tmpl *template.Template) http.HandlerFunc {
 		minYear, hasMin := parseInt(minYearStr)
 		maxYear, hasMax := parseInt(maxYearStr)
 
-		// Validation des paramètres d'années
+		
 		if minYearStr != "" && !hasMin {
 			errorHandler(w, tmpl, 400, "L'année minimale doit être un nombre valide.")
 			return
@@ -105,8 +105,7 @@ func homeHandler(tmpl *template.Template) http.HandlerFunc {
 
 		membersVals := r.URL.Query()["members"]
 		selected := selectedMembersSet(membersVals)
-
-		// Validation du nombre de membres
+		
 		for memberCount := range selected {
 			if memberCount < 1 || memberCount > 10 {
 				errorHandler(w, tmpl, 400, "Le nombre de membres doit être entre 1 et 10.")
@@ -177,8 +176,7 @@ func artistHandler(tmpl *template.Template) http.HandlerFunc {
 			errorHandler(w, tmpl, 404, "")
 			return
 		}
-
-		// Validation de l'ID
+		
 		if _, err := strconv.Atoi(idStr); err != nil {
 			errorHandler(w, tmpl, 400, "L'ID de l'artiste doit être un nombre valide.")
 			return
@@ -359,9 +357,8 @@ func compareHandler(tmpl *template.Template) http.HandlerFunc {
 			AllArtists: artists,
 		}
 
-		// Si deux artistes sont sélectionnés, charger leurs données
+		
 		if id1Str != "" && id2Str != "" {
-			// Validation des IDs
 			if _, err := strconv.Atoi(id1Str); err != nil {
 				errorHandler(w, tmpl, 400, "L'ID du premier artiste doit être un nombre valide.")
 				return
@@ -371,7 +368,7 @@ func compareHandler(tmpl *template.Template) http.HandlerFunc {
 				return
 			}
 
-			// Trouver l'artiste 1
+			
 			for i := range artists {
 				if fmt.Sprint(artists[i].Id) == id1Str {
 					data.Artist1 = &artists[i]
@@ -379,7 +376,7 @@ func compareHandler(tmpl *template.Template) http.HandlerFunc {
 				}
 			}
 
-			// Trouver l'artiste 2
+			
 			for i := range artists {
 				if fmt.Sprint(artists[i].Id) == id2Str {
 					data.Artist2 = &artists[i]
@@ -387,7 +384,7 @@ func compareHandler(tmpl *template.Template) http.HandlerFunc {
 				}
 			}
 
-			// Vérifier que les deux artistes existent
+			
 			if data.Artist1 == nil {
 				errorHandler(w, tmpl, 404, "Le premier artiste n'existe pas.")
 				return
@@ -421,7 +418,7 @@ func compareHandler(tmpl *template.Template) http.HandlerFunc {
 				}
 			}
 
-			// Charger les relations de l'artiste 2
+			
 			if data.Artist2 != nil {
 				var relRes RelationsResponse
 				if err := fetchJSON(data.Artist2.Relations, &relRes); err == nil {
@@ -463,7 +460,7 @@ func favoriteHandler(tmpl *template.Template) http.HandlerFunc {
 			return
 		}
 
-		// Vérifier que l'artiste existe
+		
 		artists, err := fetchArtists()
 		if err != nil {
 			errorHandler(w, tmpl, 500, "Impossible de vérifier l'artiste.")
