@@ -25,21 +25,21 @@ func errorHandler(w http.ResponseWriter, tmpl *template.Template, code int, mess
 	case 404:
 		title = "Page introuvable"
 		if message == "" {
-			msg = "Désolé, la page que vous recherchez n'existe pas ou a été déplacée."
+			msg = "DÃ©solÃ©, la page que vous recherchez n'existe pas ou a Ã©tÃ© dÃ©placÃ©e."
 		} else {
 			msg = message
 		}
 	case 400:
-		title = "Requête invalide"
+		title = "RequÃªte invalide"
 		if message == "" {
-			msg = "Les paramètres de votre requête sont incorrects."
+			msg = "Les paramÃ¨tres de votre requÃªte sont incorrects."
 		} else {
 			msg = message
 		}
 	case 500:
 		title = "Erreur serveur"
 		if message == "" {
-			msg = "Une erreur interne s'est produite. Veuillez réessayer plus tard."
+			msg = "Une erreur interne s'est produite. Veuillez rÃ©essayer plus tard."
 		} else {
 			msg = message
 		}
@@ -81,7 +81,6 @@ func homeHandler(tmpl *template.Template) http.HandlerFunc {
 		minYear, hasMin := parseInt(minYearStr)
 		maxYear, hasMax := parseInt(maxYearStr)
 
-		
 		if minYearStr != "" && !hasMin {
 			errorHandler(w, tmpl, 400, "L'année minimale doit être un nombre valide.")
 			return
@@ -132,6 +131,34 @@ func homeHandler(tmpl *template.Template) http.HandlerFunc {
 						match = true
 					}
 				}
+
+				if !match {
+					var relRes RelationsResponse
+					if err := fetchJSON(artist.Relations, &relRes); err == nil {
+						for location, dates := range relRes.DatesLocation {
+							locationClean := strings.ReplaceAll(strings.ToLower(location), "_", " ")
+							locationFormatted := strings.ToLower(formatPlace(location))
+							
+							if strings.Contains(locationClean, query) || strings.Contains(locationFormatted, query) {
+								match = true
+								break
+							}
+
+							for _, date := range dates {
+								dateClean := strings.ToLower(formatDate(date))
+								if strings.Contains(dateClean, query) {
+									match = true
+									break
+								}
+							}
+							
+							if match {
+								break
+							}
+						}
+					}
+				}
+
 				if !match {
 					continue
 				}
@@ -178,13 +205,13 @@ func artistHandler(tmpl *template.Template) http.HandlerFunc {
 		}
 		
 		if _, err := strconv.Atoi(idStr); err != nil {
-			errorHandler(w, tmpl, 400, "L'ID de l'artiste doit être un nombre valide.")
+			errorHandler(w, tmpl, 400, "L'ID de l'artiste doit Ãªtre un nombre valide.")
 			return
 		}
 
 		artists, err := fetchArtists()
 		if err != nil {
-			errorHandler(w, tmpl, 500, "Impossible de récupérer les données.")
+			errorHandler(w, tmpl, 500, "Impossible de rÃ©cupÃ©rer les donnÃ©es.")
 			return
 		}
 
@@ -205,15 +232,15 @@ func artistHandler(tmpl *template.Template) http.HandlerFunc {
 		var relRes RelationsResponse
 
 		if err := fetchJSON(found.Locations, &locRes); err != nil {
-			errorHandler(w, tmpl, 500, "Impossible de récupérer les données.")
+			errorHandler(w, tmpl, 500, "Impossible de rÃ©cupÃ©rer les donnÃ©es.")
 			return
 		}
 		if err := fetchJSON(found.ConcertDates, &dateRes); err != nil {
-			errorHandler(w, tmpl, 500, "Impossible de récupérer les données.")
+			errorHandler(w, tmpl, 500, "Impossible de rÃ©cupÃ©rer les donnÃ©es.")
 			return
 		}
 		if err := fetchJSON(found.Relations, &relRes); err != nil {
-			errorHandler(w, tmpl, 500, "Impossible de récupérer les données.")
+			errorHandler(w, tmpl, 500, "Impossible de rÃ©cupÃ©rer les donnÃ©es.")
 			return
 		}
 
@@ -261,7 +288,7 @@ func locationsHandler(tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		artists, err := fetchArtists()
 		if err != nil {
-			errorHandler(w, tmpl, 500, "Impossible de récupérer les artistes pour la carte.")
+			errorHandler(w, tmpl, 500, "Impossible de rÃ©cupÃ©rer les artistes pour la carte.")
 			return
 		}
 		locationMap := make(map[string]*LocationMarker)
@@ -300,11 +327,11 @@ func locationsHandler(tmpl *template.Template) http.HandlerFunc {
 
 		continentMap := make(map[string]*Continent)
 		continentEmojis := map[string]string{
-			"Amérique du Nord": "",
-			"Amérique du Sud":  "",
+			"AmÃ©rique du Nord": "",
+			"AmÃ©rique du Sud":  "",
 			"Europe":           "",
 			"Asie":             "",
-			"Océanie":          "",
+			"OcÃ©anie":          "",
 		}
 
 		for _, marker := range locationMap {
@@ -346,7 +373,7 @@ func compareHandler(tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		artists, err := fetchArtists()
 		if err != nil {
-			errorHandler(w, tmpl, 500, "Impossible de récupérer les données.")
+			errorHandler(w, tmpl, 500, "Impossible de rÃ©cupÃ©rer les donnÃ©es.")
 			return
 		}
 
@@ -360,11 +387,11 @@ func compareHandler(tmpl *template.Template) http.HandlerFunc {
 		
 		if id1Str != "" && id2Str != "" {
 			if _, err := strconv.Atoi(id1Str); err != nil {
-				errorHandler(w, tmpl, 400, "L'ID du premier artiste doit être un nombre valide.")
+				errorHandler(w, tmpl, 400, "L'ID du premier artiste doit Ãªtre un nombre valide.")
 				return
 			}
 			if _, err := strconv.Atoi(id2Str); err != nil {
-				errorHandler(w, tmpl, 400, "L'ID du deuxième artiste doit être un nombre valide.")
+				errorHandler(w, tmpl, 400, "L'ID du deuxiÃ¨me artiste doit Ãªtre un nombre valide.")
 				return
 			}
 
@@ -390,7 +417,7 @@ func compareHandler(tmpl *template.Template) http.HandlerFunc {
 				return
 			}
 			if data.Artist2 == nil {
-				errorHandler(w, tmpl, 404, "Le deuxième artiste n'existe pas.")
+				errorHandler(w, tmpl, 404, "Le deuxiÃ¨me artiste n'existe pas.")
 				return
 			}
 
@@ -463,7 +490,7 @@ func favoriteHandler(tmpl *template.Template) http.HandlerFunc {
 		
 		artists, err := fetchArtists()
 		if err != nil {
-			errorHandler(w, tmpl, 500, "Impossible de vérifier l'artiste.")
+			errorHandler(w, tmpl, 500, "Impossible de vÃ©rifier l'artiste.")
 			return
 		}
 
@@ -510,7 +537,7 @@ func favoritesPageHandler(tmpl *template.Template) http.HandlerFunc {
 
 		artists, err := fetchArtists()
 		if err != nil {
-			errorHandler(w, tmpl, 500, "Impossible de récupérer les données.")
+			errorHandler(w, tmpl, 500, "Impossible de rÃ©cupÃ©rer les donnÃ©es.")
 			return
 		}
 
@@ -529,7 +556,7 @@ func favoritesPageHandler(tmpl *template.Template) http.HandlerFunc {
 		}
 
 		if err := tmpl.ExecuteTemplate(w, "favorites.html", data); err != nil {
-			errorHandler(w, tmpl, 500, "Impossible de récupérer les données.")
+			errorHandler(w, tmpl, 500, "Impossible de rÃ©cupÃ©rer les donnÃ©es.")
 			return
 		}
 	}
