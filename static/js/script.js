@@ -21,14 +21,11 @@ function toggleContinent(continentId) {
             }
         }
         
-        // Fonction pour scroller vers une ville quand on clique sur un marqueur
         function scrollToLocation(locationId) {
             event.stopPropagation();
             
-            // Trouver l'élément dans la liste
             const locationElement = document.getElementById(locationId);
             if (locationElement) {
-                // Ouvrir le continent parent
                 const continentContent = locationElement.closest('.continent-content');
                 if (continentContent && continentContent.style.display === 'none') {
                     const continentTitle = continentContent.previousElementSibling;
@@ -37,18 +34,15 @@ function toggleContinent(continentId) {
                     }
                 }
                 
-                // Ouvrir les détails de la ville
                 if (locationElement.style.display === 'none' || locationElement.style.display === '') {
                     locationElement.parentElement.click();
                 }
                 
-                // Scroll vers l'élément
                 locationElement.parentElement.scrollIntoView({ 
                     behavior: 'smooth', 
                     block: 'center' 
                 });
                 
-                // Effet de highlight
                 locationElement.parentElement.style.background = 'rgba(143, 188, 143, 0.3)';
                 setTimeout(() => {
                     locationElement.parentElement.style.background = '';
@@ -56,7 +50,6 @@ function toggleContinent(continentId) {
             }
         }
         
-        // Système de zoom sur la carte
         let zoomLevel = 1;
         const mapContainer = document.getElementById('map-container');
         const mapImage = document.getElementById('map-image');
@@ -83,15 +76,13 @@ function toggleContinent(continentId) {
             mapImage.style.transform = `scale(${zoomLevel})`;
             mapSvg.style.transform = `scale(${zoomLevel})`;
             
-            // Ajuster la taille du conteneur pour permettre le scroll
             const newWidth = 100 * zoomLevel;
-            const newHeight = (600 / 1200 * 100) * zoomLevel; // Maintenir le ratio de la carte
+            const newHeight = (600 / 1200 * 100) * zoomLevel; 
             
             mapImage.style.width = newWidth + '%';
             mapSvg.style.width = newWidth + '%';
         }
         
-        // Permettre le drag pour déplacer la carte quand zoomée
         let isDragging = false;
         let startX, startY, scrollLeft, scrollTop;
         
@@ -131,7 +122,6 @@ function toggleContinent(continentId) {
             mapContainer.scrollTop = scrollTop - walkY;
         });
         
-        // Mettre à jour le curseur selon le zoom
         function updateCursor() {
             if (zoomLevel > 1) {
                 mapContainer.style.cursor = 'grab';
@@ -139,8 +129,7 @@ function toggleContinent(continentId) {
                 mapContainer.style.cursor = 'default';
             }
         }
-        
-        // Appeler updateCursor après chaque zoom
+    
         const originalUpdateZoom = updateZoom;
         updateZoom = function() {
             originalUpdateZoom();
