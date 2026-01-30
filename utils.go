@@ -49,7 +49,6 @@ func formatPlace(raw string) string {
 	city := titleWords(cityRaw)
 	country := titleWords(countryRaw)
 
-	// Pour les codes pays courts (2-3 lettres), mettre en majuscules
 	if len(strings.ReplaceAll(countryRaw, " ", "")) <= 3 {
 		country = strings.ToUpper(countryRaw)
 	}
